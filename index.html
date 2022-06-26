@@ -7,10 +7,148 @@
         </style>
     </head>
     <body>
-        <div class="cards">
-            <script>
-                console.log('XXXX:', this);
-            </script>
+        <script src="https://kit.fontawesome.com/39f1cab4ba.js" crossorigin="anonymous"></script>
+        <script>
+          function load(f, ...args){
+            window._itemCnt = (window._items || 0) + 1
+            const k = `_i${window._itemCnt}`;
+            document.write(`<div id="${k}"></div>`);
+            window.addEventListener('load', function(){
+              const s = document.getElementById(k);
+              const p = s.parentNode;
+              p.removeChild(s);
+              f(p, ...args);
+            });
+          }
+          
+          let _resize = null;
+        
+          function cardGame(wrapper, cols, rows){
+            const _q = s => wrapper.querySelectorAll(s);
+            const _ = s => wrapper.querySelector(s);
+        
+              const cards = new Array(Math.floor(cols*rows/2))
+                .fill(0).map((e,i)=>i);
+            cards.push(...cards);
+        
+                const icons = ICONS
+              .map(v => ({ v, s: Math.random() }))
+              .sort(({s:a}, {s:b}) => a - b)
+              .map(({ v }) => v)
+              .slice(0, cards.length/2)
+             
+            console.log(icons.length, icons[0]);
+                      
+            wrapper.innerHTML = `<div class="cards">${
+                cards.map(v => ({ v, s: Math.random() }))
+                  .sort(({s:a}, {s:b}) => a - b)
+                  .map(({ v }) => v)
+                  .map((e, i)=>`<div card="${e}"><b>${
+                        `<i class="${icons[e]}"></i><br>
+                        <span>${icons[e].split('fa-').pop().replace(/-/g,' ')}</span>
+                    `
+                    }</b></div>`).join('\n')
+                }</div>
+                <div class="congrats">
+                    Congratulations. Game completed!
+                    <button>Restart</button>
+                      </div>`;
+              
+            wrapper.style.setProperty('--cols', cols);
+            
+            _('.cards').addEventListener('click', e=>{
+              const card = parseInt(e.target.getAttribute('card'));
+                if(isNaN(card)) return;
+        
+              const visible = _q(`div[card]:not(.paired).visible`);
+              if(visible.length >= 2){
+                  visible.forEach(c => c != e.target && c.classList.toggle('visible'));
+              }
+              
+              
+              e.target.classList.toggle('visible');
+              
+              const visibleEq = _q(`div[card="${card}"]:not(.paired).visible`);
+              if(visibleEq.length == 2){
+                  visibleEq.forEach(c => c.classList.toggle('paired'));
+              }
+              
+              if(_q(`div[card].paired`).length == cards.length){
+                  wrapper.classList.toggle('completed');
+              }
+              
+            });
+            _('.congrats button').addEventListener('click', 
+                e=>{
+                  wrapper.classList.toggle('completed');
+                  cardGame(wrapper, cols, rows)
+              }
+            );
+            
+            _resize = ()=>{
+                _('.cards').style.setProperty('--size', (()=>{
+                      const baseSize = 20;
+                      const minSize = baseSize*5 + 0.5*baseSize; 
+                  const sampleCard = _('.cards div[card]');
+                  const size = Math.min(
+                    sampleCard.offsetWidth, 
+                    sampleCard.offsetHeight
+                  );
+                  return `${baseSize*size/minSize}px`;
+                })()
+              );
+            };
+            setTimeout(_resize, 0);
+          }
+          
+          window.addEventListener('resize', e=>{
+              if(_resize) _resize();
+          })
+          
+        </script>
+        <style>
+          .cards div[card] { background: gray; overflow: hidden; position:relative; }
+          .cards div[card] > b { display: block; position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); pointer-events:none; text-align: center; font-size: calc(var(--size)*0.8)}
+          
+          .cards div[card] > b > i { vertical-align: middle; font-size:400%; }
+          .cards div[card] > b > span {text-transform: capitalize; margin-top:0.3em; display:inline-block;}
+        
+          .cards div[card]:not(.visible) > b { opacity: 0; }
+          .cards div[card].paired { background: green; }
+          
+          .cards {
+            display: grid;
+            grid-template-columns: repeat(var(--cols), 1fr);
+            grid-gap: 5px;
+            height: 100%;
+            --size: 20px;
+          }
+          .game {
+            height: 100%;
+            position:relative;
+          }
+          .game .congrats{
+            position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%);
+            font-size: 4em;
+            z-index:2;
+            text-align: center;
+            background: #008000a3;
+          }
+          .game:not(.completed) .congrats {
+            display:none;
+          }
+          html {
+            display: flex;
+            flex-direction:column;
+            height: 100%;
+          }
+          body {
+            flex:1;
+            font-family: sans-serif;
+          }
+        </style>
+        <div class="game">
+          <script>load(cardGame, 6, 5)</script>
         </div>
     </body>
 </html>
