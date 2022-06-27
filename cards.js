@@ -27,19 +27,21 @@ function updateGame(newSettings){
 function initializeCardGame(wrapper){
   try{
     _game = JSON.parse(localStorage.cardGameSettings);
+    _game.wrapper = wrapper;
   }catch(e){
     _game = null;
   }
-  _game.wrapper = wrapper;
 
-  if(!_game || !_game.wrapper){
+  if(!_game){
     _game = {
+      wrapper,
       cols: 4,
       rows: 4,
       type: 'utf8',
       url: 'cards-utf8-flags.json'
     }
   }
+
   document.querySelector('.opts select').value = _game.url;
   return updateGame({});
 }
@@ -73,7 +75,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
           </div>`).join('\n')
       }</div>
       <div class="congrats">
-          Congratulations. Game completed!
+          <div>Congratulations. Game completed!</div>
           <button>Restart</button>
             </div>`;
     
@@ -112,17 +114,15 @@ async function cardGame(wrapper, cols, rows, {type, url}){
         visibleEq.forEach(c => c.classList.toggle('paired'));
     }
     
-    if(_q(`div[card].paired`).length == cards.length){
+    if(_q(`div[card].paired`).length == cards.length * 2){
         wrapper.classList.toggle('completed');
     }
   });
 
-  _('.congrats button').addEventListener('click', 
-      e=>{
-        wrapper.classList.toggle('completed');
-        cardGame(wrapper, cols, rows)
-    }
-  );
+  _('.congrats button').addEventListener('click', e => {
+    wrapper.classList.toggle('completed');
+    updateGame({})
+  });
   
   _resize = ()=>{
       const cards = _('.cards');

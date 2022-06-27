@@ -37,13 +37,24 @@
   flex:1;
   position:relative;
 }
-.game .congrats{
-  position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%);
+.game .congrats {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
   font-size: 4em;
-  z-index:2;
+  z-index: 2;
   text-align: center;
-  background: #008000a3;
+  background: #ffffffdb;
+  border-radius: 0.5em;
+  padding: 0.5em;
 }
+
+.game .congrats button {
+    font-size: 52%;
+    margin: 0.3em;
+}
+
 .game:not(.completed) .congrats {
   display:none;
 }
