@@ -1,0 +1,69 @@
+.cards div[card] { background: gray; overflow: hidden; position:relative; }
+.cards div[card]:hover, .cards div[card].pressed { background: rgb(102, 114, 133); }
+.cards div[card] .img { position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); text-align: center; font-size: calc(var(--size) * 0.8); line-height: 100%; }
+.cards div[card] * { display: block; pointer-events:none; }
+
+.cards div[card] .desc { 
+  text-transform: capitalize;
+  font-size: calc(max(0.15*var(--size), 15px));
+  line-height: 115%;
+  bottom: 0;
+  width: 100%;
+  position: absolute;
+  transition: all 0.5s;
+  background: #fff9;
+  padding: 0.12em;
+  padding-bottom: 0;
+  text-align: center;
+  opacity: 0;
+  box-sizing: border-box;
+  transform: translateY(100%);
+  word-wrap: break-word;
+}
+.cards div[card]:hover .desc, .cards div[card].hover .desc { opacity: 1; transform: translateY(0);}
+.cards.cards div[card]:not(.visible) * { opacity: 0; }
+.cards.cards div[card].visible { background: #d6d4d4; }
+.cards div[card].paired { background: green; }
+.cards div[card][missing] { pointer-events: none; opacity: 0;}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 1fr);
+  grid-gap: 5px;
+  height: 100%;
+  --size: 20px;
+}
+.game {
+  flex:1;
+  position:relative;
+}
+.game .congrats{
+  position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%);
+  font-size: 4em;
+  z-index:2;
+  text-align: center;
+  background: #008000a3;
+}
+.game:not(.completed) .congrats {
+  display:none;
+}
+html {
+  display: flex;
+  flex-direction:column;
+  height: 100%;
+}
+body {
+  flex:1;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;  
+}
+
+.opts {
+  margin-top: 8px;
+  text-align: center;
+}
+.opts select, .opts button {
+  font-size: 140%;
+  margin: 0 0.2em;
+}
