@@ -27,9 +27,11 @@ function updateGame(newSettings){
 function initializeCardGame(wrapper){
   try{
     _game = JSON.parse(localStorage.cardGameSettings);
-  }catch{
+  }catch(e){
     _game = null;
   }
+  _game.wrapper = wrapper;
+
   if(!_game || !_game.wrapper){
     _game = {
       cols: 4,
@@ -38,7 +40,7 @@ function initializeCardGame(wrapper){
       url: 'cards-utf8-flags.json'
     }
   }
-  _game.wrapper = wrapper;
+  document.querySelector('.opts select').value = _game.url;
   return updateGame({});
 }
 

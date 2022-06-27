@@ -16,6 +16,7 @@
           <button onclick="updateGame({rows: _game.rows+1})">+ Rows</button>
           <button onclick="updateGame({rows: _game.rows-1})">- Rows</button>
           <select onchange="updateGame({url: this.value})">
+            <option value="">- Subject -</option>
             <option value="cards-utf8-stuff.json">All kinds of things</option>
             <option value="cards-utf8-transport.json">Transport</option>
             <option value="cards-utf8-flags.json">Flags</option>
