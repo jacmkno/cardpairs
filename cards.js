@@ -92,6 +92,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   });
 
   _('.cards').addEventListener('click', e=>{
+    document.body.classList.remove('showAll');
     const card = parseInt(e.target.getAttribute('card'));
     if(isNaN(card)) return;
 
@@ -143,3 +144,4 @@ async function cardGame(wrapper, cols, rows, {type, url}){
 window.addEventListener('resize', e=>{
     if(_resize) _resize();
 })
+

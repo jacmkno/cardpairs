@@ -21,7 +21,7 @@
   word-wrap: break-word;
 }
 .cards div[card]:hover .desc, .cards div[card].hover .desc { opacity: 1; transform: translateY(0);}
-.cards.cards div[card]:not(.visible) * { opacity: 0; }
+BODY:not(.showAll) .cards.cards div[card]:not(.visible) * { opacity: 0; }
 .cards.cards div[card].visible { background: #d6d4d4; }
 .cards div[card].paired { background: green; }
 .cards div[card][missing] { pointer-events: none; opacity: 0;}
@@ -78,3 +78,4 @@ body {
   font-size: 140%;
   margin: 0 0.2em;
 }
+
