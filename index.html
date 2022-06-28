@@ -5,6 +5,11 @@
         <style>
             @import "cards.css";
         </style>
+        <script>
+          function showAll(){
+            document.body.classList.toggle('showAll');
+          }
+        </script>
     </head>
     <body>
         <div class="game">
@@ -20,7 +25,7 @@
             <option value="cards-utf8-transport.json">Transport</option>
             <option value="cards-utf8-flags.json">Flags</option>
           </select>
-          <button onclick="document.body.classList.toggle('showAll')">Pick</button>
+          <button onclick="showAll()">Pick</button>
         </div>
     </body>
 </html>
