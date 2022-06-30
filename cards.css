@@ -119,6 +119,6 @@ BODY[os="windows"] .cards[url="cards-utf8-flags.json"] {
 
 @font-face {
   font-family: "WindowsFlags"; 
-  src: url("/OpenMoji-Color.SVG.ttf"); 
+  src: url("./OpenMoji-Color.SVG.ttf"); 
 } 
 
