@@ -62,7 +62,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   const slots = new Array(Math.floor(cols*rows/2))
       .fill(0).map((e,i)=>i);
   slots.push(...slots);
-
+  if(url == 'cards-utf8-flags.json' && document.body.getAttribute('os') == 'windows') url = 'cards-utf8-flags-windows.json';
   const cards = (await fetch(url).then(r => r.json()))
     .map(v => ({ v, s: Math.random() }))
     .sort(({s:a}, {s:b}) => a - b)

@@ -112,13 +112,11 @@ body {
   opacity: 1;
 }
 
-
-BODY[os="windows"] .cards[url="cards-utf8-flags.json"] {
+BODY .cards[url="cards-utf8-flags-windows.json"] {
   font-family: 'WindowsFlags', sans-serif;
 }
 
 @font-face {
   font-family: "WindowsFlags"; 
-  src: url("./OpenMoji-Color.SVG.ttf"); 
-} 
-
+  src: url("./BabelStoneFlags.ttf"); 
+}
