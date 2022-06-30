@@ -96,11 +96,11 @@ body {
   vertical-align: middle;
 }
 
-@font-face {
-  font-family: "Noto Emoji";
-  src: url("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/fonts/NotoColorEmoji.ttf") format("truetype");
+BODY[os="windows"] .cards[url="cards-utf8-flags.json"] {
+  font-family: 'WindowsFlags', sans-serif;
 }
 
-.cards{
-  font-family: 'Noto Emoji', sans-serif;
-}
+@font-face {
+  font-family: "WindowsFlags"; 
+  src: url("/OpenMoji-Color.SVG.ttf"); 
+} 

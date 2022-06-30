@@ -26,6 +26,10 @@ function updateGame(newSettings){
 
 function initializeCardGame(wrapper){
   try{
+    document.body.setAttribute('os', navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows');
+  }catch(e){}
+
+  try{
     _game = JSON.parse(localStorage.cardGameSettings);
     _game.wrapper = wrapper;
   }catch(e){
@@ -80,7 +84,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
             </div>`;
     
   wrapper.style.setProperty('--cols', cols);
-  
+  _('.cards').setAttribute('url', url);
   _q('.cards div[card]').forEach(c => {
     c.addEventListener('touchstart', e=>{
       e.target.classList.add('pressed');
