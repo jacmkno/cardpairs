@@ -46,6 +46,10 @@ function initializeCardGame(wrapper){
     }
   }
 
+  document.body.addEventListener('touchend', e=>{
+    document.querySelectorAll('.pressed').forEach(c => c.classList.remove('pressed'));
+  });  
+
   document.querySelector('.opts select').value = _game.url;
   return updateGame({});
 }
@@ -88,11 +92,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   _q('.cards div[card]').forEach(c => {
     c.addEventListener('touchstart', e=>{
       e.target.classList.add('pressed');
-    });
-  
-    c.addEventListener('touchend', e=>{
-      setTimeout(e=>e.target.classList.remove('pressed'), 150);
-    });
+    });  
   });
 
   _('.cards').addEventListener('click', e=>{

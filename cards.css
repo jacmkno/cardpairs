@@ -68,7 +68,8 @@ body {
   flex:1;
   font-family: sans-serif;
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
+  user-select: none;
 }
 
 .opts {
