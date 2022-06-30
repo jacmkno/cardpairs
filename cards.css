@@ -95,3 +95,12 @@ body {
   border: 0;
   vertical-align: middle;
 }
+
+@font-face {
+  font-family: "Noto Emoji";
+  src: url("https://raw.githubusercontent.com/googlefonts/noto-emoji/main/fonts/NotoColorEmoji.ttf") format("truetype");
+}
+
+.cards{
+  font-family: 'Noto Emoji', sans-serif;
+}
