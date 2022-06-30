@@ -19,6 +19,7 @@
   box-sizing: border-box;
   transform: translateY(100%);
   word-wrap: break-word;
+  z-index: 1;
 }
 .cards div[card]:hover .desc, .cards div[card].hover .desc { opacity: 1; transform: translateY(0);}
 BODY:not(.showAll) .cards.cards div[card]:not(.visible) * { opacity: 0; }
@@ -96,6 +97,21 @@ body {
   vertical-align: middle;
 }
 
+.cards div[card]::after {
+  content: '✔';
+  position: absolute;
+  bottom: 0;
+  right: calc(0.1 * var(--size));
+  font-size: calc(0.4 * var(--size));
+  color: #24f024;
+  opacity: 0;
+  transition: all 0.5s;
+}
+.cards div[card].paired::after {
+  opacity: 1;
+}
+
+
 BODY[os="windows"] .cards[url="cards-utf8-flags.json"] {
   font-family: 'WindowsFlags', sans-serif;
 }
@@ -104,3 +120,4 @@ BODY[os="windows"] .cards[url="cards-utf8-flags.json"] {
   font-family: "WindowsFlags"; 
   src: url("/OpenMoji-Color.SVG.ttf"); 
 } 
+
