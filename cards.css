@@ -75,7 +75,27 @@ body {
 .opts {
   margin-top: 8px;
   text-align: center;
+  transition: all 0.5s;
 }
+
+body:not(.settings) .opts > *:not([settings]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.opts > * {
+  cursor: pointer;
+}
+
+.opts button[settings] > b:before {
+  content: '🔒';
+}
+
+body:not(.settings) .opts button[settings] > b:before {
+  content: '✎';
+}
+
+
 .opts select, .opts button {
   font-size: 140%;
   margin: 0 0.2em;
@@ -87,8 +107,6 @@ body {
   padding: 0;
   color: #f9f9f9;
   background-color: #037f8c;
-  -webkit-transition: all .3s ease-in;
-  transition: all .3s ease-in;
   font-family: sans-serif;
   line-height: 2;
   font-size: 1rem;

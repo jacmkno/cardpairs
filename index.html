@@ -18,17 +18,18 @@
           <script>load(initializeCardGame)</script>
         </div>
         <div class="opts">
-          <button style="transform: scaleX(-1);" onclick="updateGame({cols: _game.cols+1})">⬅</button>
-          <button onclick="updateGame({cols: _game.cols-1})">⬅</button>
-          <button onclick="updateGame({rows: _game.rows+1})">⬇</button>
-          <button onclick="updateGame({rows: _game.rows-1})">⬆</button>
+          <button style="transform: scaleX(-1);" onclick="updateGame({cols: _game.cols+1})"><b>⬅</b></button>
+          <button onclick="updateGame({cols: _game.cols-1})"><b>⬅</b></button>
+          <button onclick="updateGame({rows: _game.rows+1})"><b>⬇</b></button>
+          <button onclick="updateGame({rows: _game.rows-1})"><b>⬆</b></button>
           <select onchange="updateGame({url: this.value})">
             <option value="cards-utf8-stuff.json">All kinds of things</option>
             <option value="cards-utf8-transport.json">Transport</option>
             <option value="cards-utf8-flags.json">Flags</option>
           </select>
-          <button onclick="showAll()">👁</button>
-          <button onclick="document.body.requestFullscreen()">⬕</button>
+          <button onclick="showAll()"><b>👁</b></button>
+          <button onclick="document.body.requestFullscreen()"><b>⬕</b></button>
+          <button settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
         </div>
     </body>
 </html>
