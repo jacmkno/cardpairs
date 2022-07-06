@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="google" content="notranslate" />
         <script src="cards.js"></script>
         <style>
             @import "cards.css";
@@ -22,7 +23,7 @@
           <button onclick="updateGame({cols: _game.cols-1})"><b>⬅</b></button>
           <button onclick="updateGame({rows: _game.rows+1})"><b>⬇</b></button>
           <button onclick="updateGame({rows: _game.rows-1})"><b>⬆</b></button>
-          <select onchange="updateGame({url: this.value})">
+          <select playOnChange onchange="updateGame({url: this.value});">
             <option value="cards-utf8-stuff.json">All kinds of things</option>
             <option value="cards-utf8-transport.json">Transport</option>
             <option value="cards-utf8-flags.json">Flags</option>

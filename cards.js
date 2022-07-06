@@ -1,3 +1,8 @@
+let isSafari = navigator.vendor.match(/apple/i) &&
+  !navigator.userAgent.match(/crios/i) &&
+  !navigator.userAgent.match(/fxios/i) &&
+  !navigator.userAgent.match(/Opera|OPT\//);
+
 function load(f, ...args){
   window._itemCnt = (window._items || 0) + 1
   const k = `_i${window._itemCnt}`;
@@ -10,8 +15,38 @@ function load(f, ...args){
   });
 }
 
+function playPromise(text){
+  const audio = new Audio('http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(text));
+  if(isSafari){
+    return () => new Promise(r => {
+      const a = audio.cloneNode();
+      a.play();
+      a.addEventListener("ended", e=>{
+        r(true);
+        a.pause();
+      });
+    });
+  }
+  let resolve = null;
+  const play = () => new Promise(r => {
+    resolve = r;
+    audio.currentTime = 0;
+    audio.play();
+  });
+
+  audio.addEventListener("ended", e=>{
+    audio.pause();
+    audio.currentTime = 0;
+    if(resolve) resolve(true);
+  });
+  return play;
+}
+
 let _resize = null;
 let _game = null;
+
+const AUDIO_NICE = playPromise('Nice!');
+const AUDIO_WRONG = () => null; //playPromise('Sorry...')
 
 function updateGame(newSettings){
   Object.assign(_game, newSettings);
@@ -28,6 +63,13 @@ function initializeCardGame(wrapper){
   try{
     document.body.setAttribute('os', navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows');
   }catch(e){}
+
+  document.querySelectorAll('select[playOnChange]').forEach(s => {
+    const audios = [...s.querySelectorAll('option')].map(o => playPromise(o.innerText));
+    s.addEventListener('change', e => {
+      audios[s.selectedIndex]();
+    });
+  });
 
   try{
     _game = JSON.parse(localStorage.cardGameSettings);
@@ -68,7 +110,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     .sort(({s:a}, {s:b}) => a - b)
     .map(({ v }) => v)
     .slice(0, slots.length/2);
-    
+  const audios = cards.map(c => playPromise(c[1]));
                           
   wrapper.innerHTML = `<div class="cards">${
       slots.map(v => ({ v, s: Math.random() }))
@@ -100,9 +142,16 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     const card = parseInt(e.target.getAttribute('card'));
     if(isNaN(card)) return;
 
+    let isMatch = false;
+    let isWrong = false;
+    audios[card]().then(() => {
+      if(isMatch) AUDIO_NICE();
+      if(isWrong) AUDIO_WRONG();
+    });
+
     e.target.classList.add('hover');
-    e.target.classList.remove('pressed');    
-    setTimeout(() => e.target.classList.remove('hover'), 3000);
+    e.target.classList.remove('pressed');
+    setTimeout(() => e.target.classList.remove('hover'), 3000);    
 
     if(e.target.classList.contains('visible')) return;    
 
@@ -115,8 +164,10 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     e.target.classList.toggle('visible');
     
     const visibleEq = _q(`div[card="${card}"]:not(.paired).visible`);
-    if(visibleEq.length == 2){
-        visibleEq.forEach(c => c.classList.toggle('paired'));
+    isMatch = visibleEq.length == 2;
+    isWrong = !isMatch && _q(`div[card]:not(.paired).visible`).length > 1;
+    if(isMatch){
+      visibleEq.forEach(c => c.classList.toggle('paired'));
     }
     
     if(_q(`div[card].paired`).length == cards.length * 2){
