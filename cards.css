@@ -153,6 +153,16 @@ BODY .cards[url="cards-utf8-flags-windows.json"] {
 body{
   background: black !important;
 }
-select {
+.opts select {
   background: #b5b5b5;
+  font-size: 18px;
+  height: 32px;
+}
+
+
+body {
+  margin-bottom: 2px;
+}
+.opts.opts > * {
+  margin-bottom: 6px;
 }
