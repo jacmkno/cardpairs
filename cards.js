@@ -1,3 +1,23 @@
+let isSafari = false;
+
+let _resize = null;
+let _game = null;
+
+let AUDIO_NICE = () => null;
+let AUDIO_WRONG = () => null; //playPromise('Sorry...')
+
+AUDIOS = {
+  'Nice!': "sys-nice.mp3",
+  'All kinds of things': "sys-all-kinds.mp3",
+  'Transport': "sys-transport.mp3",
+  'Flags': "sys-flags.mp3",
+};
+
+function audioFileName(text){
+  return `${text.replace(/[^a-zA-Z0-9]/g, '-')}.mp3`;
+}
+
+
 function load(f, ...args){
   window._itemCnt = (window._items || 0) + 1
   const k = `_i${window._itemCnt}`;
@@ -10,8 +30,33 @@ function load(f, ...args){
   });
 }
 
-let _resize = null;
-let _game = null;
+function playPromise(text){
+  const url = window.location.pathname.replace(/\/$/,'') + '/audios/' + (AUDIOS[text]??audioFileName(text));
+  const audio = new Audio(url);
+  if(isSafari){
+    return () => new Promise(r => {
+      const a = audio.cloneNode();
+      a.play();
+      a.addEventListener("ended", e=>{
+        r(true);
+        a.pause();
+      });
+    });
+  }
+  let resolve = null;
+  const play = () => new Promise(r => {
+    resolve = r;
+    audio.currentTime = 0;
+    audio.play();
+  });
+
+  audio.addEventListener("ended", e=>{
+    audio.pause();
+    audio.currentTime = 0;
+    if(resolve) resolve(true);
+  });
+  return play;
+}
 
 function updateGame(newSettings){
   Object.assign(_game, newSettings);
@@ -25,10 +70,28 @@ function updateGame(newSettings){
 }
 
 function initializeCardGame(wrapper){
+  isSafari = navigator.vendor.match(/apple/i) &&
+    !navigator.userAgent.match(/crios/i) &&
+    !navigator.userAgent.match(/fxios/i) &&
+    !navigator.userAgent.match(/Opera|OPT\//);
+  
+  AUDIO_NICE = playPromise('Nice!');
+
   try{
     document.body.setAttribute('os', navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows');
   }catch(e){}
 
+  document.querySelectorAll('select[playOnChange]').forEach(s => {
+    const audios = [...s.querySelectorAll('option')].map(o => playPromise(o.innerText));
+    s.addEventListener('change', e => {
+      audios[s.selectedIndex]();
+    });
+  });
+
+  window.addEventListener('resize', e=>{
+    if(_resize) _resize();
+  });
+  
   try{
     _game = JSON.parse(localStorage.cardGameSettings);
     _game.wrapper = wrapper;
@@ -68,7 +131,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     .sort(({s:a}, {s:b}) => a - b)
     .map(({ v }) => v)
     .slice(0, slots.length/2);
-    
+  const audios = cards.map(c => playPromise(c[1]));
                           
   wrapper.innerHTML = `<div class="cards">${
       slots.map(v => ({ v, s: Math.random() }))
@@ -100,9 +163,16 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     const card = parseInt(e.target.getAttribute('card'));
     if(isNaN(card)) return;
 
+    let isMatch = false;
+    let isWrong = false;
+    audios[card]().then(() => {
+      if(isMatch) AUDIO_NICE();
+      if(isWrong) AUDIO_WRONG();
+    });
+
     e.target.classList.add('hover');
-    e.target.classList.remove('pressed');    
-    setTimeout(() => e.target.classList.remove('hover'), 3000);
+    e.target.classList.remove('pressed');
+    setTimeout(() => e.target.classList.remove('hover'), 3000);    
 
     if(e.target.classList.contains('visible')) return;    
 
@@ -115,8 +185,10 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     e.target.classList.toggle('visible');
     
     const visibleEq = _q(`div[card="${card}"]:not(.paired).visible`);
-    if(visibleEq.length == 2){
-        visibleEq.forEach(c => c.classList.toggle('paired'));
+    isMatch = visibleEq.length == 2;
+    isWrong = !isMatch && _q(`div[card]:not(.paired).visible`).length > 1;
+    if(isMatch){
+      visibleEq.forEach(c => c.classList.toggle('paired'));
     }
     
     if(_q(`div[card].paired`).length == cards.length * 2){
@@ -145,7 +217,4 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   setTimeout(_resize, 0);
 }
 
-window.addEventListener('resize', e=>{
-    if(_resize) _resize();
-})
-
+if(typeof(module) != 'undefined') module.exports = {AUDIOS, audioFileName};
