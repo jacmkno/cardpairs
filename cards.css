@@ -149,3 +149,10 @@ BODY .cards[url="cards-utf8-flags-windows.json"] {
 .game:not(.completed) .cards div[card].paired:not(.hover) .desc {
   opacity: 0;
 }
+
+body{
+  background: black !important;
+}
+select {
+  background: #b5b5b5;
+}
