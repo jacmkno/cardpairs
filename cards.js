@@ -189,6 +189,11 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       }))
     });
   }
+  const checkCompleted = () => {
+    if(_q(`div[card].paired`).length == cards.length * 2){
+      wrapper.classList.toggle('completed');
+    }
+  }
   save();
 
   _('.cards').addEventListener('click', e=>{
@@ -222,10 +227,8 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     if(isMatch){
       visibleEq.forEach(c => c.classList.toggle('paired'));
     }
-    
-    if(_q(`div[card].paired`).length == cards.length * 2){
-        wrapper.classList.toggle('completed');
-    }
+
+    checkCompleted();
     save();
 
   });
@@ -248,6 +251,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       })()
     );
   };
+  checkCompleted();
   setTimeout(_resize, 0);
 }
 
