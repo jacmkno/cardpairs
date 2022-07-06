@@ -31,7 +31,7 @@ function load(f, ...args){
 }
 
 function playPromise(text){
-  const url = window.location.pathname.replace(/\/$/,'') + '/audios/' + (AUDIOS[text]??audioFileName(text));
+  const url = window.location.pathname.replace(/\/$/,'') + '/audios/' + (AUDIOS[text]?AUDIOS[text]:audioFileName(text));
   const audio = new Audio(url);
   if(isSafari){
     return () => new Promise(r => {
