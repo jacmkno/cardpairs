@@ -1,7 +1,22 @@
-let isSafari = navigator.vendor.match(/apple/i) &&
-  !navigator.userAgent.match(/crios/i) &&
-  !navigator.userAgent.match(/fxios/i) &&
-  !navigator.userAgent.match(/Opera|OPT\//);
+let isSafari = false;
+
+let _resize = null;
+let _game = null;
+
+let AUDIO_NICE = () => null;
+let AUDIO_WRONG = () => null; //playPromise('Sorry...')
+
+AUDIOS = {
+  'Nice!': "sys-nice.mp3",
+  'All kinds of things': "sys-all-kinds.mp3",
+  'Transport': "sys-transport.mp3",
+  'Flags': "sys-flags.mp3",
+};
+
+function audioFileName(text){
+  return `${text.replace(/[^a-zA-Z0-9]/g, '-')}.mp3`;
+}
+
 
 function load(f, ...args){
   window._itemCnt = (window._items || 0) + 1
@@ -16,7 +31,8 @@ function load(f, ...args){
 }
 
 function playPromise(text){
-  const audio = new Audio('http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(text));
+  const url = window.location.pathname.replace(/\/$/,'') + '/audios/' + (AUDIOS[text]??audioFileName(text));
+  const audio = new Audio(url);
   if(isSafari){
     return () => new Promise(r => {
       const a = audio.cloneNode();
@@ -42,12 +58,6 @@ function playPromise(text){
   return play;
 }
 
-let _resize = null;
-let _game = null;
-
-const AUDIO_NICE = playPromise('Nice!');
-const AUDIO_WRONG = () => null; //playPromise('Sorry...')
-
 function updateGame(newSettings){
   Object.assign(_game, newSettings);
   localStorage.cardGameSettings = JSON.stringify({..._game, wrapper: null});
@@ -60,6 +70,13 @@ function updateGame(newSettings){
 }
 
 function initializeCardGame(wrapper){
+  isSafari = navigator.vendor.match(/apple/i) &&
+    !navigator.userAgent.match(/crios/i) &&
+    !navigator.userAgent.match(/fxios/i) &&
+    !navigator.userAgent.match(/Opera|OPT\//);
+  
+  AUDIO_NICE = playPromise('Nice!');
+
   try{
     document.body.setAttribute('os', navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows');
   }catch(e){}
@@ -71,6 +88,10 @@ function initializeCardGame(wrapper){
     });
   });
 
+  window.addEventListener('resize', e=>{
+    if(_resize) _resize();
+  });
+  
   try{
     _game = JSON.parse(localStorage.cardGameSettings);
     _game.wrapper = wrapper;
@@ -196,7 +217,4 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   setTimeout(_resize, 0);
 }
 
-window.addEventListener('resize', e=>{
-    if(_resize) _resize();
-})
-
+if(typeof(module) != 'undefined') module.exports = {AUDIOS, audioFileName};
