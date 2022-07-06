@@ -58,9 +58,10 @@ function playPromise(text){
   return play;
 }
 
-function updateGame(newSettings){
+function updateGame(newSettings, preserveStatus=false){
   Object.assign(_game, newSettings);
   localStorage.cardGameSettings = JSON.stringify({..._game, wrapper: null});
+  if(!preserveStatus) localStorage.removeItem('cardGameStatus');
   return cardGame(
     _game.wrapper,
     Math.max(_game.cols, 1),
@@ -114,7 +115,7 @@ function initializeCardGame(wrapper){
   });  
 
   document.querySelector('.opts select').value = _game.url;
-  return updateGame({});
+  return updateGame({}, true);
 }
 
 async function cardGame(wrapper, cols, rows, {type, url}){
@@ -122,23 +123,43 @@ async function cardGame(wrapper, cols, rows, {type, url}){
 
   const _q = s => wrapper.querySelectorAll(s);
   const _ = s => wrapper.querySelector(s);
+
+  if(url == 'cards-utf8-flags.json' && document.body.getAttribute('os') == 'windows') url = 'cards-utf8-flags-windows.json';
+
+  const prevData = (()=>{
+    try{
+      return localStorage.cardGameStatus?JSON.parse(localStorage.cardGameStatus):null;
+    }catch(e){
+      return null;
+    }
+  })();
+
   const slots = new Array(Math.floor(cols*rows/2))
       .fill(0).map((e,i)=>i);
   slots.push(...slots);
-  if(url == 'cards-utf8-flags.json' && document.body.getAttribute('os') == 'windows') url = 'cards-utf8-flags-windows.json';
-  const cards = (await fetch(url).then(r => r.json()))
+  
+  const cards = prevData?prevData.cards:(await fetch(url).then(r => r.json()))
     .map(v => ({ v, s: Math.random() }))
     .sort(({s:a}, {s:b}) => a - b)
     .map(({ v }) => v)
     .slice(0, slots.length/2);
   const audios = cards.map(c => playPromise(c[1]));
-                          
+  const positions = prevData
+    ? prevData.positions.map(p => p.card)
+    : slots.map(v => ({ v, s: Math.random() }))
+      .sort(({s:a}, {s:b}) => a - b)
+      .map(({ v }) => v);
+  const classes = (i)=>{
+    if(!prevData) return '';
+    return `class="${[
+      prevData.positions[i].visible && 'visible',
+      prevData.positions[i].paired && 'paired'
+    ].filter(c => c).join(' ') }"`;
+      
+  }
   wrapper.innerHTML = `<div class="cards">${
-      slots.map(v => ({ v, s: Math.random() }))
-        .sort(({s:a}, {s:b}) => a - b)
-        .map(({ v }) => v)
-        .map((e, i)=>
-          `<div card="${e}" ${cards[e]?'':'missing'}>
+        positions.map((e, i)=>
+          `<div card="${e}" ${cards[e]?'':'missing'} ${classes(i)}>
             ${cards[e]?`
               <span class="img">${cards[e][0]}</span>
               <span class="desc">${cards[e][1]}</span>
@@ -149,7 +170,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
           <div>Congratulations. Game completed!</div>
           <button>Restart</button>
             </div>`;
-    
+  
   wrapper.style.setProperty('--cols', cols);
   _('.cards').setAttribute('url', url);
   _q('.cards div[card]').forEach(c => {
@@ -157,6 +178,18 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       e.target.classList.add('pressed');
     });  
   });
+
+  const save = () => {
+    const cNds = _q(`.cards div[card]`);
+    localStorage.cardGameStatus = JSON.stringify({
+      cards, positions: positions.map((v, i) => ({
+        card: v,
+        visible: cNds[i].classList.contains('visible'),
+        paired: cNds[i].classList.contains('paired')
+      }))
+    });
+  }
+  save();
 
   _('.cards').addEventListener('click', e=>{
     document.body.classList.remove('showAll');
@@ -181,7 +214,6 @@ async function cardGame(wrapper, cols, rows, {type, url}){
         visible.forEach(c => c != e.target && c.classList.toggle('visible'));
     }
     
-    
     e.target.classList.toggle('visible');
     
     const visibleEq = _q(`div[card="${card}"]:not(.paired).visible`);
@@ -194,6 +226,8 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     if(_q(`div[card].paired`).length == cards.length * 2){
         wrapper.classList.toggle('completed');
     }
+    save();
+
   });
 
   _('.congrats button').addEventListener('click', e => {
