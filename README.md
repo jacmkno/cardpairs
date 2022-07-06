@@ -7,3 +7,4 @@ Go to https://jacmkno.github.io/cardpairs/
 - Decided to use UNICODE icons
 - Started adding features as needed
 - Can be used to practice english
+- The idea is to turn this into a payed app just for the sake of it... Doesn't maatter if you clone it, it's still open source...
