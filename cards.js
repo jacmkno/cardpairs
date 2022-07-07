@@ -166,8 +166,13 @@ async function cardGame(wrapper, cols, rows, {type, url}){
         positions.map((e, i)=>
           `<div card="${e}" ${cards[e]?'':'missing'} ${classes(i)}>
             ${cards[e]?`
-              <span class="img">${cards[e][0]}</span>
-              <span class="desc">${cards[e][1]}</span>
+              <div class="wrap3dcard">
+                <div class="front3dcard"></div>
+                <div class="back3dcard">
+                  <span class="img">${cards[e][0]}</span>
+                  <span class="desc">${cards[e][1]}</span>
+                </div>
+              </div>
             `:''}
           </div>`).join('\n')
       }</div>

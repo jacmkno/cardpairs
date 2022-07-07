@@ -22,7 +22,6 @@
   z-index: 1;
 }
 .cards div[card]:hover .desc, .cards div[card].hover .desc { opacity: 1; transform: translateY(0);}
-BODY:not(.showAll) .cards.cards div[card]:not(.visible) * { opacity: 0; }
 .cards.cards div[card].visible { background: #d6d4d4; }
 .cards div[card].paired { background: green; }
 .cards div[card][missing] { pointer-events: none; opacity: 0;}
@@ -136,7 +135,8 @@ BODY .cards[url="cards-utf8-flags-windows.json"] {
 
 @font-face {
   font-family: "WindowsFlags"; 
-  src: url("./BabelStoneFlags.ttf"); 
+  src: url("./NotoColorEmoji_WindowsCompatible.ttf"); 
+  /*src: url("./BabelStoneFlags.ttf"); */
 }
 
 .game:not(.completed) .cards div[card][card].paired {
@@ -170,4 +170,64 @@ body {
 body:-webkit-full-screen {
   width: 100vw !important;
   height: 100vh !important ;
+}
+
+
+
+.cards > div[card] {
+  perspective: 600px;
+  cursor: pointer;
+}
+
+.wrap3dcard {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform-origin: center right;
+  transition: transform 1s;
+}
+
+.cards > div[card].visible .wrap3dcard {
+  transform: translateX(-100%) rotateY(-180deg);
+}
+
+.wrap3dcard > div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.front3dcard {
+  background: #63c8d2;
+}
+
+.back3dcard {
+  background: #f3ffde;
+  transform: rotateY(180deg);
+}
+
+.front3dcard:before {
+  content: '☆';
+  font-size: calc(var(--size) * 0.5);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  color: #6056d5;
+  opacity: 0.2;
+}
+.cards > div[card]:hover .front3dcard:before,
+.cards > div[card].hover .front3dcard:before
+ {
+  opacity: 1;
+}
+
+.cards > div[card]:hover .front3dcard,
+.cards > div[card].hover .front3dcard {
+  background: #96d9df;
+}
+
+.cards div[card], .wrap3dcard > div {
+  border-radius: calc(var(--size) * 0.08);
 }
