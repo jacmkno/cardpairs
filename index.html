@@ -4,13 +4,28 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="google" content="notranslate" />
-        <script src="cards.js?9"></script>
+        <script src="cards.js?11"></script>
         <style>
             @import "cards.css?3";
         </style>
         <script>
           function showAll(){
             document.body.classList.toggle('showAll');
+          }
+          function toggleFullScreen() {
+            if(document.body.webkitRequestFullscreen){
+              if (document.webkitCurrentFullScreenElement) {
+                document.body.classList.remove('webkit-full-screen');
+                document.webkitExitFullscreen();
+              } else {
+                document.body.classList.add('webkit-full-screen');
+                document.body.webkitRequestFullscreen();
+              }
+            } else if (document.fullscreenElement) {
+              document.exitFullscreen();
+            } else {
+              document.body.requestFullscreen();
+            }
           }
         </script>
     </head>
@@ -28,9 +43,9 @@
             <option value="cards-utf8-transport.json">Transport</option>
             <option value="cards-utf8-flags.json">Flags</option>
           </select>
-          <button onclick="showAll()"><b>👁</b></button>
-          <button onclick="document.body.requestFullscreen()"><b>⬕</b></button>
-          <button settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
+          <button permanent settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
+          <button permanent onclick="showAll()"><b>👁</b></button>
+          <button permanent onclick="toggleFullScreen()"><b>⬕</b></button>
         </div>
     </body>
 </html>

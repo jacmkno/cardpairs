@@ -78,7 +78,7 @@ body {
   transition: all 0.5s;
 }
 
-body:not(.settings) .opts > *:not([settings]) {
+body:not(.settings) .opts > *:not([settings]):not([permanent]) {
   opacity: 0.5;
   pointer-events: none;
 }
@@ -165,4 +165,9 @@ body {
 }
 .opts.opts > * {
   margin-bottom: 6px;
+}
+
+body:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important ;
 }

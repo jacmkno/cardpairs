@@ -35,9 +35,10 @@ function playPromise(text){
   const audio = new Audio(url);
   if(isSafari){
     return () => new Promise(r => {
-      const a = audio.cloneNode();
-      a.play();
-      a.addEventListener("ended", e=>{
+      audio.setAttribute('src', url);
+      audio.load();
+      audio.play();
+      audio.addEventListener("ended", e=>{
         r(true);
         a.pause();
       });
@@ -81,6 +82,10 @@ function initializeCardGame(wrapper){
   try{
     document.body.setAttribute('os', navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows');
   }catch(e){}
+  
+  if(!document.body.requestFullscreen && !document.body.webkitRequestFullscreen){
+    document.querySelector('.opts button[onclick*="toggleFullScreen"]').style.display = 'none';
+  }
 
   document.querySelectorAll('select[playOnChange]').forEach(s => {
     const audios = [...s.querySelectorAll('option')].map(o => playPromise(o.innerText));
