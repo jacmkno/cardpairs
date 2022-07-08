@@ -262,7 +262,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     e.target.classList.remove('pressed');
 
     if(e.target.classList.contains('hover') && e.target.classList.contains('visible')){
-      const visible = _q('.cards > div[card].visible');
+      const visible = _q('.cards > div[card]:not(.paired).visible');
       if(visible.length >= 2){
         visible.forEach(e => {
           e.classList.remove('hover');
