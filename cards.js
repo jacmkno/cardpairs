@@ -259,16 +259,27 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     const index = parseInt(e.target.getAttribute('index'));
     if(isNaN(card)) return;
 
+    e.target.classList.remove('pressed');
+
+    if(e.target.classList.contains('hover') && e.target.classList.contains('visible')){
+      const visible = _q('.cards > div[card].visible');
+      if(visible.length >= 2){
+        visible.forEach(e => {
+          e.classList.remove('hover');
+          e.classList.remove('visible')
+        });
+        return;
+      }
+    }
+
+    addTemporaryClass(e.target, 'hover');
+
     let isMatch = false;
     let isWrong = false;
     audios[index]().then(() => {
       if(isMatch) AUDIO_NICE();
       if(isWrong) AUDIO_WRONG();
-    });
-
-    e.target.classList.remove('pressed');
-
-    addTemporaryClass(e.target, 'hover');
+    });    
 
     if(e.target.classList.contains('visible')) return;    
 
