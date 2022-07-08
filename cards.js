@@ -32,6 +32,16 @@ function shuffle(a){
     .map(({ v }) => v);
 }
 
+function addTemporaryClass(element, className){
+  element.classList.add(className);
+  const tmpClassKey = '_tmpClassSrc_' + className;
+  element[tmpClassKey] = {};
+  const hovrSrc = element[tmpClassKey];
+  setTimeout(() => {
+    if(hovrSrc == element[tmpClassKey])
+      element.classList.remove(className);
+  }, 3000);    
+}
 
 function load(f, ...args){
   window._itemCnt = (window._items || 0) + 1
@@ -256,9 +266,9 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       if(isWrong) AUDIO_WRONG();
     });
 
-    e.target.classList.add('hover');
     e.target.classList.remove('pressed');
-    setTimeout(() => e.target.classList.remove('hover'), 3000);    
+
+    addTemporaryClass(e.target, 'hover');
 
     if(e.target.classList.contains('visible')) return;    
 
@@ -273,7 +283,10 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     isMatch = visibleEq.length == 2;
     isWrong = !isMatch && _q(`div[card]:not(.paired).visible`).length > 1;
     if(isMatch){
-      visibleEq.forEach(c => c.classList.toggle('paired'));
+      visibleEq.forEach(c => {
+        c.classList.toggle('paired');
+        addTemporaryClass(c, 'hover');
+      });
     }
 
     checkCompleted();
