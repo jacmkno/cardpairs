@@ -1,4 +1,4 @@
-const {AUDIOS, audioFileName} = require('./cards.js');
+const {AUDIOS, audioFileName, GENERATORS} = require('./cards.js');
 const fs = require('fs');
 const http = require('http');
 const audioPath = './audios';
@@ -13,6 +13,15 @@ fs.readdirSync("./").filter(file => file.match(/.json$/ig)).forEach(file => {
     if(!Array.isArray(texts)) return;
     texts.forEach(([code, name]) => {
         AUDIOS[name] = audioFileName(name);
+    });
+});
+
+Object.values(GENERATORS).forEach(g => {
+    if(g.genAudios) g().forEach(c => {
+        while(c.length) {
+            const tuple = c.splice(0, 2);
+            if(tuple[1]) AUDIOS[tuple[1]] = audioFileName(tuple[1]);
+        }
     });
 });
 
