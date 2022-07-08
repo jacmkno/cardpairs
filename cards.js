@@ -12,18 +12,31 @@ AUDIOS = {
   'Transport': "sys-transport.mp3",
   'Flags': "sys-flags.mp3",
   'Upper/Lower Case': 'sys-upper-lower.mp3',
+  'Sums & Subtractions': 'sys-addition-subtraction.mp3',
 };
 
 GENERATORS = {
   upperlower: function(desiredCards){
     const chars = 'abcdefghijklmnñopqrstuvwxyz'.split('');
     return chars.map(c => [c, `Letter ${c}`, c.toUpperCase()]);
+  },
+  sum: function(desiredCards){
+    return new Array(desiredCards).fill(0).map((e, i) => {
+      let n = Math.floor(Math.random() * i * 1.4);
+      if(n > i) n = i;
+      return [{T:'sum', v:[n, i - n]}, '', {T:'num', v:i}];
+    });
   }
 };
 GENERATORS.upperlower.genAudios = true;
 
 TEMPLATES = {
-  'char': (v) => v
+  'char': (v) => v,
+  'sum': (numbers) => {
+    const rt = numbers.map(n => (n >= 0)?`+${n}`:n).join('');
+    return rt.startsWith('+') ? rt.substr(1) : rt;
+  },
+  'num': (v) => v
 }
 
 function renderCardTemplate(cardValue){
@@ -73,7 +86,9 @@ function playPromise(text){
     return () => new Promise(r => {
       audio.setAttribute('src', url);
       audio.load();
-      audio.play();
+      audio.play().catch(e=>{
+        r(true);
+      });
       audio.addEventListener("ended", e=>{
         r(true);
         a.pause();
@@ -84,7 +99,9 @@ function playPromise(text){
   const play = () => new Promise(r => {
     resolve = r;
     audio.currentTime = 0;
-    audio.play();
+    audio.play().catch(e=>{
+      r(true);
+    });
   });
 
   audio.addEventListener("ended", e=>{
