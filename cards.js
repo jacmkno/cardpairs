@@ -188,7 +188,9 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   );
 
   const audioPromises = {};
-  const audios = cards.map(c => audioPromises[c[2]] = audioPromises[c[2]]??playPromise(c[2]));
+  const audios = cards.map(c => audioPromises[c[2]] = 
+      audioPromises[c[2]] ? audioPromises[c[2]] : playPromise(c[2])
+  );
   const state = hasPrevData ? prevData.state : shuffle(slots);
   const classes = (i)=>{
     if(!prevData) return '';
