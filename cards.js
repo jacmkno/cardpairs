@@ -22,6 +22,17 @@ GENERATORS = {
 };
 GENERATORS.upperlower.genAudios = true;
 
+TEMPLATES = {
+  'char': (v) => v
+}
+
+function renderCardTemplate(cardValue){
+  if(typeof(cardValue) != 'object'){
+    cardValue = {T:'char', 'v': cardValue};
+  }
+  return `<span class="img" template="${cardValue.T}">${TEMPLATES[cardValue.T](cardValue.v)}</span>`;
+}
+
 function audioFileName(text){
   return `${text.replace(/[^a-zA-Z0-9]/g, '-')}.mp3`;
 }
@@ -217,7 +228,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
               <div class="wrap3dcard">
                 <div class="front3dcard"></div>
                 <div class="back3dcard">
-                  <span class="img">${cards[i][1]}</span>
+                  ${renderCardTemplate(cards[i][1])}
                   <span class="desc">${cards[i][2]}</span>
                 </div>
               </div>
