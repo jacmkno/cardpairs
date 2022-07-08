@@ -11,10 +11,25 @@ AUDIOS = {
   'All kinds of things': "sys-all-kinds.mp3",
   'Transport': "sys-transport.mp3",
   'Flags': "sys-flags.mp3",
+  'Upper/Lower Case': 'sys-upper-lower.mp3',
 };
+
+GENERATORS = {
+  upperlower: function(desiredCards){
+    const chars = 'abcdefghijklmnñopqrstuvwxyz'.split('');
+    return chars.map(c => [c, `Letter ${c}`, c.toUpperCase()]);
+  }
+};
+GENERATORS.upperlower.genAudios = true;
 
 function audioFileName(text){
   return `${text.replace(/[^a-zA-Z0-9]/g, '-')}.mp3`;
+}
+
+function shuffle(a){
+  return a.map(v => ({ v, s: Math.random() }))
+    .sort(({s:a}, {s:b}) => a - b)
+    .map(({ v }) => v);
 }
 
 
@@ -139,38 +154,59 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     }
   })();
 
-  const slots = new Array(Math.floor(cols*rows/2))
-      .fill(0).map((e,i)=>i);
-  slots.push(...slots);
-  
-  const cards = prevData?prevData.cards:(await fetch(url).then(r => r.json()))
-    .map(v => ({ v, s: Math.random() }))
-    .sort(({s:a}, {s:b}) => a - b)
-    .map(({ v }) => v)
-    .slice(0, slots.length/2);
-  const audios = cards.map(c => playPromise(c[1]));
-  const positions = prevData
-    ? prevData.positions.map(p => p.card)
-    : slots.map(v => ({ v, s: Math.random() }))
-      .sort(({s:a}, {s:b}) => a - b)
-      .map(({ v }) => v);
+  const desiredCards = 2 * Math.floor(cols*rows/2);
+  const slots = new Array(desiredCards).fill({});
+  const hasPrevData = prevData && prevData.cards && prevData.cards[0].length == 3;
+  // New on-memory card format is [key, templateValue, name]
+  // Source format is [templateValue1, name1, templateValue2, < name2 ?> ...]
+  const cards = hasPrevData ? prevData.cards : (
+    (cardPatterns) => {
+      const cards = [];
+      while(cards.length < desiredCards && cardPatterns.length){
+        const cardPattern = cardPatterns.pop();
+        let lastCard = null;
+        const patternCards = [];
+        while(cardPattern.length){
+          const c = cardPattern.splice(0,2);
+          if(c.length < 2) c.push(lastCard?lastCard[2]:'');
+          c.unshift(lastCard ? lastCard[0] : cards.length);
+          if(c.length != 3) continue;
+          patternCards.push(c);
+          lastCard = c;
+        }
+
+        // Each pattern generates at least two cards
+        if(patternCards.length == 1) patternCards.push(lastCard);
+
+        if(cards.length + patternCards.length <= desiredCards) 
+          cards.push(...patternCards);
+      }
+      return shuffle(cards);
+    }
+  )(
+    shuffle(GENERATORS[url] ? GENERATORS[url](desiredCards) : await fetch(url).then(r => r.json()) )
+  );
+
+  const audioPromises = {};
+  const audios = cards.map(c => audioPromises[c[2]] = audioPromises[c[2]]??playPromise(c[2]));
+  const state = hasPrevData ? prevData.state : shuffle(slots);
   const classes = (i)=>{
     if(!prevData) return '';
     return `class="${[
-      prevData.positions[i].visible && 'visible',
-      prevData.positions[i].paired && 'paired'
+      state[i].visible && 'visible',
+      state[i].paired && 'paired'
     ].filter(c => c).join(' ') }"`;
       
   }
   wrapper.innerHTML = `<div class="cards">${
-        positions.map((e, i)=>
-          `<div card="${e}" ${cards[e]?'':'missing'} ${classes(i)}>
-            ${cards[e]?`
+      state.map((e, i)=>
+          `<div card="${cards[i]?cards[i][0]:''}" index="${i}" ${cards[i]?'':'missing'} ${classes(i)}>
+            ${cards[i]?`
               <div class="wrap3dcard">
                 <div class="front3dcard"></div>
                 <div class="back3dcard">
-                  <span class="img">${cards[e][0]}</span>
-                  <span class="desc">${cards[e][1]}</span>
+                  <span class="img">${cards[i][1]}</span>
+                  <span class="desc">${cards[i][2]}</span>
                 </div>
               </div>
             `:''}
@@ -192,15 +228,14 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   const save = () => {
     const cNds = _q(`.cards div[card]`);
     localStorage.cardGameStatus = JSON.stringify({
-      cards, positions: positions.map((v, i) => ({
-        card: v,
+      cards, state: state.map((v, i) => ({
         visible: cNds[i].classList.contains('visible'),
         paired: cNds[i].classList.contains('paired')
       }))
     });
   }
   const checkCompleted = () => {
-    if(_q(`div[card].paired`).length == cards.length * 2){
+    if(_q(`div[card].paired`).length == cards.length){
       wrapper.classList.toggle('completed');
     }
   }
@@ -209,11 +244,12 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   _('.cards').addEventListener('click', e=>{
     document.body.classList.remove('showAll');
     const card = parseInt(e.target.getAttribute('card'));
+    const index = parseInt(e.target.getAttribute('index'));
     if(isNaN(card)) return;
 
     let isMatch = false;
     let isWrong = false;
-    audios[card]().then(() => {
+    audios[index]().then(() => {
       if(isMatch) AUDIO_NICE();
       if(isWrong) AUDIO_WRONG();
     });
@@ -265,4 +301,4 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   setTimeout(_resize, 0);
 }
 
-if(typeof(module) != 'undefined') module.exports = {AUDIOS, audioFileName};
+if(typeof(module) != 'undefined') module.exports = {AUDIOS, audioFileName, GENERATORS};

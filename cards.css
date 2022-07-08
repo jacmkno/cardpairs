@@ -187,7 +187,9 @@ body:-webkit-full-screen {
   transition: transform 1s;
 }
 
-.cards > div[card].visible .wrap3dcard {
+.cards > div[card].visible .wrap3dcard,
+body.showAll .cards > div[card] .wrap3dcard
+{
   transform: translateX(-100%) rotateY(-180deg);
 }
 
