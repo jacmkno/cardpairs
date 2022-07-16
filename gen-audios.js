@@ -28,14 +28,15 @@ Object.values(GENERATORS).forEach(g => {
 Object.entries(AUDIOS).forEach(([text, fileName]) => {
     const filePath = audioPath + '/' + fileName;
     if(fs.existsSync(filePath)){
+        return;
         fs.unlinkSync(filePath);
     }
-    const file = fs.createWriteStream(filePath);
     http.get('http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(text), function(response) {
-       response.pipe(file);    
-       file.on("finish", () => {
+        const file = fs.createWriteStream(filePath);
+        response.pipe(file);    
+        file.on("finish", () => {
            file.close();
            console.log("Downloaded: " + text);
-       });
+        });
     });
 });
