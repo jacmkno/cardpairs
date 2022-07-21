@@ -121,7 +121,7 @@ function playPromise(text){
 }
 
 function updateGame(newSettings, preserveStatus=false){
-  if(!Object.entries(newSettings).length){
+  if(!preserveStatus){
     document.querySelector('.game').classList.remove('completed');
   }
   Object.assign(_game, newSettings);
