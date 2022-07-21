@@ -1,6 +1,6 @@
 .cards div[card] { background: gray; overflow: hidden; position:relative; }
 .cards div[card]:hover, .cards div[card].pressed { background: rgb(102, 114, 133); }
-.cards div[card] .img { position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); text-align: center; font-size: calc(var(--size) * 0.8); line-height: 100%; }
+.cards div[card] .img { position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%) scale(var(--cardzoom)); text-align: center; font-size: calc(var(--size) * 0.8); line-height: 100%; }
 .cards div[card] * { display: block; pointer-events:none; }
 
 .cards div[card] .desc { 
@@ -32,6 +32,7 @@
   grid-gap: 5px;
   height: 100%;
   --size: 20px;
+  --cardzoom: 1;
 }
 .game {
   flex:1;
@@ -132,6 +133,9 @@ body:not(.settings) .opts button[settings] > b:before {
 BODY .cards[url="cards-utf8-flags-windows.json"] .img[template="char"]{
   font-family: 'WindowsFlags', sans-serif;
 }
+.cards div[card] .img[template="char"]{
+  --cardzoom: 1 !important;
+}
 
 @font-face {
   font-family: "WindowsFlags"; 
@@ -219,7 +223,12 @@ body.showAll .cards > div[card] .wrap3dcard
   transform: translateX(-50%) translateY(-50%);
   color: #6056d5;
   opacity: 0.2;
+  transition: opacity 0.4s; /* Safari 11 iOS issue */
 }
+.cards.cards div[card].visible .front3dcard::before {
+  opacity: 0;
+}
+
 .cards > div[card]:hover .front3dcard:before,
 .cards > div[card].hover .front3dcard:before
  {
