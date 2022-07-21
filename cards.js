@@ -348,9 +348,16 @@ async function cardGame(wrapper, cols, rows, {type, url}){
           sampleCard.offsetHeight
         );
         return `${size}px`;
-      })()
-    );
+      })() );
+
+      setTimeout(() => _q('.cards div[card] .img').forEach(img => {
+        const [W, H] = [img.parentNode.offsetWidth, img.parentNode.offsetHeight];
+        const M = 0.5 * Math.min(...[W, H]); // Margin
+        const [w, h] = [img.offsetWidth + M, img.offsetHeight + M];
+        img.style.setProperty('--cardzoom', 1/Math.max(...[w/W, h/H]))
+      }), 50);
   };
+
   checkCompleted();
   setTimeout(_resize, 0);
 }
