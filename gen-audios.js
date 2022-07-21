@@ -31,7 +31,7 @@ Object.entries(AUDIOS).forEach(([text, fileName]) => {
         return;
         fs.unlinkSync(filePath);
     }
-    http.get('http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(text), function(response) {
+    http.get('http://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=' + encodeURIComponent(text) + '.', function(response) {
         const file = fs.createWriteStream(filePath);
         response.pipe(file);    
         file.on("finish", () => {
