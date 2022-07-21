@@ -13,7 +13,16 @@ AUDIOS = {
   'Flags': "sys-flags.mp3",
   'Upper/Lower Case': 'sys-upper-lower.mp3',
   'Sums & Subtractions': 'sys-addition-subtraction.mp3',
+  'Animals': 'sys-animals.mp3',
+  'Activities': 'sys-activities.mp3',
+  'Food': 'sys-food.mp3',
+  'Objects': 'sys-objects.mp3',
+  'People': 'sys-people.mp3',
+  'Smileys': 'sys-smileys.mp3',
+  'Symbols': 'sys-symbols.mp3',
+  'Travel': 'sys-travel.mp3'
 };
+
 
 GENERATORS = {
   upperlower: function(desiredCards){
@@ -22,8 +31,7 @@ GENERATORS = {
   },
   sum: function(desiredCards){
     return new Array(desiredCards).fill(0).map((e, i) => {
-      let n = Math.floor(Math.random() * i * 1.4);
-      if(n > i) n = i;
+      let n = Math.floor(Math.random() * i * 1.5);
       return [{T:'sum', v:[n, i - n]}, '', {T:'num', v:i}];
     });
   }
