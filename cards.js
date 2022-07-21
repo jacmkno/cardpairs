@@ -121,6 +121,9 @@ function playPromise(text){
 }
 
 function updateGame(newSettings, preserveStatus=false){
+  if(!Object.entries(newSettings).length){
+    document.querySelector('.game').classList.remove('completed');
+  }
   Object.assign(_game, newSettings);
   localStorage.cardGameSettings = JSON.stringify({..._game, wrapper: null});
   if(!preserveStatus) localStorage.removeItem('cardGameStatus');
@@ -342,7 +345,6 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   });
 
   _('.congrats button').addEventListener('click', e => {
-    wrapper.classList.toggle('completed');
     updateGame({})
   });
   
