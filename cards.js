@@ -86,7 +86,7 @@ function supportsEmoji(e) {
 
 async function loadUTF8Cards(url){
   document.body.classList.add('loading');
-  const fq = await fetch(url).then(r=>r.json());
+  const fq = await fetch('cards/' + url).then(r=>r.json());
   if(document.body.getAttribute('os') == 'windows'){
     // All emojis are assumed included in the windows webfont. Confirmed on testing for notofont. 
     return fq;
