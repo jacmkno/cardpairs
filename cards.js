@@ -233,7 +233,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       return shuffle(cards);
     }
   )(
-    shuffle(GENERATORS[url] ? GENERATORS[url](desiredCards) : await fetch(url).then(r => r.json()) )
+    shuffle(GENERATORS[url] ? GENERATORS[url](desiredCards) : await fetch('cards/' + url).then(r => r.json()) )
   );
 
   const audioPromises = {};
