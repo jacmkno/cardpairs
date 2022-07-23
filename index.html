@@ -4,9 +4,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="google" content="notranslate" />
-        <script src="cards.js?11"></script>
+        <script>
+          window.onload = () => {
+            'use strict';
+
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker
+                      .register('./service-worker.js');
+            }
+          }
+        </script>
+        <script src="cards.js"></script>
         <style>
-            @import "cards.css?3";
+            @import "cards.css";
         </style>
         <script>
           function showAll(){
