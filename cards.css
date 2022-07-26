@@ -130,7 +130,7 @@ body:not(.settings) .opts button[settings] > b:before {
   opacity: 1;
 }
 
-BODY .cards[url="cards-utf8-flags-windows.json"] .img[template="char"]{
+BODY[os="windows"] .cards .img[template="char"]{
   font-family: 'WindowsFlags', sans-serif;
 }
 .cards div[card] .img[template="char"]{
