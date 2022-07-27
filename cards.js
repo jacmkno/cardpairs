@@ -47,6 +47,71 @@ TEMPLATES = {
   'num': (v) => v
 }
 
+function supportsEmoji(e) {
+  const em = 16;
+  var ctx = (()=>{
+    if(!this.UTF_SUPPORT_CTX){
+      var c = document.createElement("canvas")
+      this.UTF_SUPPORT_CTX = c.getContext("2d");
+      c.width = em;
+      c.height = em;
+    }
+    return this.UTF_SUPPORT_CTX;
+  })();  
+  
+  //https://en.wikipedia.org/wiki/Specials_(Unicode_block) (NON-Character)
+  var unsupported = (() => {
+    if(!this.UTF_UNSUPPORTED){
+      this.UTF_UNSUPPORTED = ["\uFFFF", "\uFFFF\uFFFF"].map(b => {
+        ctx.clearRect(0, 0, em, em);
+        ctx.fillText(b, 0, em);
+        let d = ctx.getImageData(0, 0, em, em).data
+        let sum = d.reduce((acc, cur) => {
+          return acc + cur
+        })
+        return sum
+      });  
+    }
+    return this.UTF_UNSUPPORTED;
+  })()
+
+  ctx.clearRect(0, 0, em, em);
+  ctx.fillText(e, 0, em);
+  let d = ctx.getImageData(0, 0, em, em).data
+  let sum = d.reduce((acc, cur) => {
+    return acc + cur
+  })
+  return !unsupported.some(b => b == sum)?1:0
+}
+
+async function loadUTF8Cards(url){
+  document.body.classList.add('loading');
+  const fq = await fetch('cards/' + url).then(r=>r.json());
+  if(document.body.getAttribute('os') == 'windows'){
+    // All emojis seem to work on windows and MAC, probably android too. 
+    return fq;
+  }
+
+  const supportedEmoji = localStorage.supportedEmoji ? JSON.parse(localStorage.supportedEmoji) : {};
+  const rt = fq.filter(card => {
+    for(let i = 0; i < card.length; i += 2){
+      const c = card[i];
+      if(supportedEmoji[c] === undefined){
+        supportedEmoji[c] = supportsEmoji(c);
+      }
+      if(!supportedEmoji[c]){
+        console.log('UNSUPORTED:', c);
+        return false;
+      }
+    }
+    return true;
+  });
+  localStorage.supportedEmoji = JSON.stringify(supportedEmoji);
+  document.body.classList.remove('loading');
+  return rt;
+}
+
+
 function renderCardTemplate(cardValue){
   if(typeof(cardValue) != 'object'){
     cardValue = {T:'char', 'v': cardValue};
@@ -193,8 +258,6 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   const _q = s => wrapper.querySelectorAll(s);
   const _ = s => wrapper.querySelector(s);
 
-  if(url == 'cards-utf8-flags.json' && document.body.getAttribute('os') == 'windows') url = 'cards-utf8-flags-windows.json';
-
   const prevData = (()=>{
     try{
       return localStorage.cardGameStatus?JSON.parse(localStorage.cardGameStatus):null;
@@ -233,7 +296,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       return shuffle(cards);
     }
   )(
-    shuffle(GENERATORS[url] ? GENERATORS[url](desiredCards) : await fetch('cards/' + url).then(r => r.json()) )
+    shuffle(GENERATORS[url] ? GENERATORS[url](desiredCards) : await loadUTF8Cards(url) )
   );
 
   const audioPromises = {};
