@@ -57,12 +57,12 @@ function supportsEmoji(e) {
       c.height = em;
     }
     return this.UTF_SUPPORT_CTX;
-  })();  
+  })();
   
   //https://en.wikipedia.org/wiki/Specials_(Unicode_block) (NON-Character)
   var unsupported = (() => {
     if(!this.UTF_UNSUPPORTED){
-      this.UTF_UNSUPPORTED = ["\uFFFF", "\uFFFF\uFFFF"].map(b => {
+      this.UTF_UNSUPPORTED = ["\uFFFF", "\uFFFF\uFFFF", "\uFFFF\uFFFF\uFFFF"].map(b => {
         ctx.clearRect(0, 0, em, em);
         ctx.fillText(b, 0, em);
         let d = ctx.getImageData(0, 0, em, em).data
@@ -88,7 +88,7 @@ async function loadUTF8Cards(url){
   document.body.classList.add('loading');
   const fq = await fetch(url).then(r=>r.json());
   if(document.body.getAttribute('os') == 'windows'){
-    // All emojis seem to work on windows and MAC, probably android too. 
+    // All emojis are assumed included in the windows webfont. Confirmed on testing for notofont. 
     return fq;
   }
 
