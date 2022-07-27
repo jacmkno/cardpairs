@@ -34,10 +34,10 @@
           <script>load(initializeCardGame)</script>
         </div>
         <div class="opts">
-          <button style="transform: scaleX(-1);" onclick="updateGame({cols: _game.cols+1})"><b>⬅</b></button>
-          <button onclick="updateGame({rows: _game.rows+1})"><b>⬇</b></button>
-          <button onclick="updateGame({cols: _game.cols-1})"><b>⬅</b></button>
-          <button onclick="updateGame({rows: _game.rows-1})"><b>⬆</b></button>
+          <button onclick="updateGame({cols: _game.cols-1})"><b>↞</b></button>
+          <button onclick="updateGame({rows: _game.rows-1})"><b>↟</b></button>
+          <button onclick="updateGame({cols: _game.cols+1})"><b>↠</b></button>
+          <button onclick="updateGame({rows: _game.rows+1})"><b>↡</b></button>
           <select playOnChange onchange="updateGame({url: this.value});">
             <option value="cards-utf8-animals.json">Animals</option>
             <option value="cards-utf8-activities.json">Activities</option>

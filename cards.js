@@ -86,7 +86,7 @@ function supportsEmoji(e) {
 
 async function loadUTF8Cards(url){
   document.body.classList.add('loading');
-  const fq = await fetch(url).then(r=>r.json());
+  const fq = await fetch('cards/' + url).then(r=>r.json());
   if(document.body.getAttribute('os') == 'windows'){
     // All emojis seem to work on windows and MAC, probably android too. 
     return fq;

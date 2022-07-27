@@ -139,8 +139,8 @@ BODY[os="windows"] .cards .img[template="char"]{
 
 @font-face {
   font-family: "WindowsFlags"; 
-  src: url("./NotoColorEmoji_WindowsCompatible.ttf"); 
-  /*src: url("./BabelStoneFlags.ttf"); */
+  src: url("./fonts/NotoColorEmoji_WindowsCompatible.ttf"); 
+  /*src: url("./fonts/BabelStoneFlags.ttf"); */
 }
 
 .game:not(.completed) .cards div[card][card].paired {
