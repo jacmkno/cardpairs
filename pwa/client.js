@@ -19,7 +19,7 @@ window.addEventListener('load', function(){
             done();
           }
           if(new Date().getTime() - t0 > 5000){
-            fail();
+            fail(new Error('No controller after 5 seconds'));
           }
         }, 100);
       }))
