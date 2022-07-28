@@ -61,6 +61,8 @@ window.addEventListener('load', function(){
           });    
         }).then(e => setInstalled(true));
       }
+    }).catch(e=>{
+      console.log('ERROR:', e);
     });
 
     navigator.serviceWorker.addEventListener('message', (event) => {
