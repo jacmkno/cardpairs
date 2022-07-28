@@ -4,12 +4,13 @@ window.addEventListener('load', function(){
     document.body.classList.add('pwa');
 
     function setInstalled(installed){
-      window.PWAinstalled = data.isInstalled;
+      window.PWAinstalled = installed;
       document.body.setAttribute('pwaInstalled', installed ? 1 : 0);
       console.log('PWA.setInstalled:', installed);
     }
 
     navigator.serviceWorker.ready.then((registration) => {
+      console.log('Service Worker Connected...');
       return (new Promise((done, fail) => {
         const t0 = new Date().getTime();
         const i = setInterval(()=> {
@@ -43,6 +44,9 @@ window.addEventListener('load', function(){
         return new Promise((done, fail) => {
           window.onPWAMessage = function(data){
             if(data.loading !== undefined){
+              if(data.error){
+                return fail(data.error);
+              }
               if(!data.remaining){
                 done();
               } else {
@@ -66,8 +70,10 @@ window.addEventListener('load', function(){
     });
 
     navigator.serviceWorker.addEventListener('message', (event) => {
+      console.log('MESSAGE:', event.data);
       if(event.data.reinstall){
         setInstalled(false);
+        return;
       }
       if(window.onPWAMessage){
         window.onPWAMessage(event.data);
@@ -75,7 +81,7 @@ window.addEventListener('load', function(){
     });
 
     navigator.serviceWorker
-      .register('./pwa/sw.js')
+      .register('../sw.js')
       .then(function() { console.log('Service Worker Registered'); });
   }
 });
