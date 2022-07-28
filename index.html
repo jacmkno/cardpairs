@@ -7,7 +7,7 @@
 
         <link rel="manifest" href="/manifest.json">
         <link rel="icon" href="favicon.ico" type="image/x-icon" />
-        <link rel="apple-touch-icon" href="pwa/icon-152x152.png">
+        <link rel="apple-touch-icon" href="pwa/icons/152x152.png">
         <meta name="theme-color" content="white"/>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -15,36 +15,7 @@
         <meta name="msapplication-TileImage" content="pwa/icon-144x144.png">
         <meta name="msapplication-TileColor" content="#FFFFFF">
 
-        <script>
-          window.onload = () => {
-            'use strict';
-
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.ready.then((registration) => {
-                console.log('Service Worker Ready');
-                (new Promise(r => {
-                  const i = setInterval(()=> {
-                    if(navigator.serviceWorker.controller){
-                      clearInterval(i);
-                      r(true);
-                    }
-                  }, 100);
-                })).then(()=>{
-                  console.log('Service Worker Controller Ready');
-                  navigator.serviceWorker.controller.postMessage({
-                    cmd: 'LOAD_ASSETS',
-                  });
-                })
-              });
-              navigator.serviceWorker.addEventListener('message', (event) => {
-                console.log('XXXX:', event);
-              });
-              navigator.serviceWorker
-                .register('./sw.js')
-                .then(function() { console.log('Service Worker Registered'); });
-            }
-          }
-        </script>
+        <script src="pwa/client.js"></script>
         <script src="cards.js"></script>
         <style>
             @import "cards.css";
