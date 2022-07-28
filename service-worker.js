@@ -1,4 +1,15 @@
 const srcs = {
+  "pwa": [
+    "icon-128x128.png",
+    "icon-144x144.png",
+    "icon-152x152.png",
+    "icon-192x192.png",
+    "icon-384x384.png",
+    "icon-48x48.png",
+    "icon-512x512.png",
+    "icon-72x72.png",
+    "icon-96x96.png"
+  ],
   "fonts": [
     "BabelStoneFlags.ttf",
     "NotoColorEmoji_WindowsCompatible.ttf",
@@ -2601,26 +2612,34 @@ const srcs = {
     "zzz.mp3"
   ]
 };
-var filesToCache = ['cards.js', 'cards.css'];
-Object.entries(srcs).forEach((dir, files)=>
-    filesToCache.push(...files.map(f => dir + '/' + f))
+var filesToCache = ['cards.js'];
+if(0) Object.entries(srcs).forEach(([dir, files])=> {
+    if(files.length < 30) filesToCache.push(...files.map(f => dir + '/' + f))
+  }
 );
 
 /* Start the service worker and cache all of the app's content */
 self.addEventListener('install', function(e) {
-e.waitUntil(
+  self.skipWaiting();
+  console.log('CACHING: ', filesToCache);
+  e.waitUntil(
     caches.open('card-game').then(function(cache) {
-    return cache.addAll(filesToCache);
+      return cache.addAll(filesToCache);
     })
-);
-self.skipWaiting();
+  );
+});
+
+self.addEventListener('activate', event => {
+  clients.claim();
+  console.log('V1 now ready to handle fetches!');
 });
 
 /* Serve cached content when offline */
 self.addEventListener('fetch', function(e) {
-e.respondWith(
+  console.log('FETCH: ', e.request.url);
+  e.respondWith(
     caches.match(e.request).then(function(response) {
-    return response || fetch(e.request);
+      return response || fetch(e.request);
     })
-);
+  );
 });
