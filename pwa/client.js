@@ -56,9 +56,16 @@ window.addEventListener('load', function(){
                 document.body.style.setProperty(
                   '--pwa-install-progress', progress
                 );
+                document.body.style.setProperty(
+                  '--pwa-install-progress-suffix', `'${Math.floor(100 * progress)}'`
+                );
                 console.log('PWA Install Progress: ', Math.floor(100 * progress) + '%')
               }
             }
+            navigator.serviceWorker.controller.postMessage({
+              cmd: 'KEEP_ALIVE',
+              timestamp: new Date().getTime()
+            });
           }
           navigator.serviceWorker.controller.postMessage({
             cmd: 'LOAD_ASSETS',

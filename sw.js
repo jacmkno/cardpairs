@@ -6,16 +6,20 @@
 const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
 const CACHE_KEY = 'cardpairs1.1';
-const MAX_CONCURRENT_FETCHES = 15;
+const MAX_CONCURRENT_FETCHES = 80;
 const MAX_RETRIES = 3;
 const PROGRESS_FREQ_MS = 1000;
+const REQUEST_TIMEOUT_MS = 3000;
 const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows';
 
 
 let installed = false;
 
 function cacheUrl(url, cache, attempts=0){
-  fetch(url).then(response => {
+  return Promise.race([
+    fetch(url), 
+    new Promise(r => setTimeout(r, REQUEST_TIMEOUT_MS))
+  ]).then(response => {
     if (!response.ok){
       if(attempts >= MAX_RETRIES){
         throw Error("Response not ok");
@@ -27,35 +31,45 @@ function cacheUrl(url, cache, attempts=0){
   });
 }
 
-function loadFiles(files, client = null){
+async function loadFiles(files, client = null){
   const cFiles = files.map(f => f);
   const cache = await caches.open(CACHE_KEY);
   const pending = {};
   let cnt = 0;
   let t0 = 0;
 
+  function notifyProgress(){
+    if(client) {
+      const progress = {loading: files.length, remaining: cFiles.length, pending: Object.keys(pending).length, timestamp: new Date().getTime()};
+      console.log('LOADING PROGRESS:', progress)
+      client.postMessage(progress);
+    }
+  }
+
   return new Promise(async (done, fail)=>{
     while(cFiles.length){
       let bufferSize = Object.keys(pending).length;
       if(bufferSize < MAX_CONCURRENT_FETCHES){
         ((id)=>{
-          pending[id] = cacheUrl(cFiles.shift(), cache)
+          const next = cFiles.shift();
+          pending[id] = cacheUrl(next, cache)
             .then(() => delete pending[id])
-            .catch(fail)
+            .catch(fail);
         })(cnt);
         cnt ++; bufferSize ++;
       }
       if(bufferSize >= MAX_CONCURRENT_FETCHES){
-        await new Promise(r=>setTimeout(r, 300));
+        await new Promise(r => setTimeout(r, 300));
       }
       if(new Date().getTime() - t0 > PROGRESS_FREQ_MS){
-        if(client) {
-          const progress = {loading: files.length, remaining: cFiles.length, pending: bufferSize};
-          console.log('FILES LOADED... ', progress)
-          client.postMessage(progress);
-        }
+        notifyProgress();
+        t0 = new Date().getTime();
       }
     }
+    await Promise.all(Object.values(pending));
+    notifyProgress();
+
+    done();
   }).catch(e => {
     const progress = {loading: files.length, remaining: cFiles.length, error: e, pending: Object.keys(pending).length};
     if(client) {

@@ -19,6 +19,17 @@
         <script src="cards.js"></script>
         <style>
             @import "cards.css";
+            BODY:not(.pwa-available) .opts button[onclick*="installPWA"], 
+            BODY[pwainstalled="1"] .opts button[onclick*="installPWA"] {
+              display: none;
+            }
+            .opts button[onclick*="installPWA"] {
+              width: auto;
+              padding: 0 0.5em;
+            }
+            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick*="installPWA"]::after {
+              content: var(--pwa-install-progress-suffix);
+            }
         </style>
         <script>
           function showAll(){
@@ -69,6 +80,7 @@
           <button onclick="toggleFullScreen()"><b>⬕</b></button>
           <button permanent settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
           <button permanent onclick="showAll()"><b>👁</b></button>
+          <button title="Install as App or to use offline" permanent onclick="installPWA()"><b>APP</b></button>
         </div>
     </body>
 </html>
