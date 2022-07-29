@@ -7,6 +7,8 @@ window.addEventListener('load', function(){
       window.PWAinstalled = installed;
       document.body.setAttribute('pwaInstalled', installed ? 1 : 0);
       console.log('PWA.setInstalled:', installed);
+      document.body.style.removeProperty('--pwa-install-progress');
+      document.body.style.removeProperty('--pwa-install-progress-suffix');      
     }
 
     navigator.serviceWorker.ready.then((registration) => {
@@ -57,7 +59,7 @@ window.addEventListener('load', function(){
                   '--pwa-install-progress', progress
                 );
                 document.body.style.setProperty(
-                  '--pwa-install-progress-suffix', `'${Math.floor(100 * progress)}'`
+                  '--pwa-install-progress-suffix', `' ${Math.floor(100 * progress)}%'`
                 );
                 console.log('PWA Install Progress: ', Math.floor(100 * progress) + '%')
               }
@@ -70,9 +72,15 @@ window.addEventListener('load', function(){
           navigator.serviceWorker.controller.postMessage({
             cmd: 'LOAD_ASSETS',
           });    
-        }).then(e => setInstalled(true));
+        })
+        .then(e => setInstalled(true))
+        .catch(e => {
+          setInstalled(false);
+          throw e;
+        });
       }
     }).catch(e=>{
+      setInstalled(false);
       console.log('ERROR:', e);
     });
 

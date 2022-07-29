@@ -30,6 +30,9 @@
             BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick*="installPWA"]::after {
               content: var(--pwa-install-progress-suffix);
             }
+            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick*="installPWA"]{
+              pointer-events: none;
+            }
         </style>
         <script>
           function showAll(){
