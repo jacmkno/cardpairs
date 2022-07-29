@@ -6,32 +6,64 @@
 const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
 const CACHE_KEY = 'cardpairs1.1';
-const BATCH_SIZE = 5;
+const MAX_CONCURRENT_FETCHES = 15;
+const MAX_RETRIES = 3;
+const PROGRESS_FREQ_MS = 1000;
 const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows';
 
 
 let installed = false;
 
-async function loadFiles(files, client = null){
-  const cFiles = [...files];
-  const cache = await caches.open(CACHE_KEY);
-  while(cFiles.length){
-    try{
-      await cache.addAll(cFiles.splice(0, BATCH_SIZE));
-      if(client) {
-        const progress = {loading: files.length, remaining: cFiles.length};
-        console.log('FILES LOADED... ', progress)
-        client.postMessage(progress);
+function cacheUrl(url, cache, attempts=0){
+  fetch(url).then(response => {
+    if (!response.ok){
+      if(attempts >= MAX_RETRIES){
+        throw Error("Response not ok");
+      }else{
+        return cacheUrl(url, cache, attempts + 1);
       }
-    }catch(e){
-      const progress = {loading: files.length, remaining: cFiles.length, error: e};
-      if(client) {
-        console.log('FILES LOADING FAILED...', progress)
-        client.postMessage(progress);
-      }
-      throw e;
     }
-  }
+    return cache.put(url, response);
+  });
+}
+
+function loadFiles(files, client = null){
+  const cFiles = files.map(f => f);
+  const cache = await caches.open(CACHE_KEY);
+  const pending = {};
+  let cnt = 0;
+  let t0 = 0;
+
+  return new Promise(async (done, fail)=>{
+    while(cFiles.length){
+      let bufferSize = Object.keys(pending).length;
+      if(bufferSize < MAX_CONCURRENT_FETCHES){
+        ((id)=>{
+          pending[id] = cacheUrl(cFiles.shift(), cache)
+            .then(() => delete pending[id])
+            .catch(fail)
+        })(cnt);
+        cnt ++; bufferSize ++;
+      }
+      if(bufferSize >= MAX_CONCURRENT_FETCHES){
+        await new Promise(r=>setTimeout(r, 300));
+      }
+      if(new Date().getTime() - t0 > PROGRESS_FREQ_MS){
+        if(client) {
+          const progress = {loading: files.length, remaining: cFiles.length, pending: bufferSize};
+          console.log('FILES LOADED... ', progress)
+          client.postMessage(progress);
+        }
+      }
+    }
+  }).catch(e => {
+    const progress = {loading: files.length, remaining: cFiles.length, error: e, pending: Object.keys(pending).length};
+    if(client) {
+      console.log('FILES LOADING FAILED...', progress)
+      client.postMessage(progress);
+    }
+    throw e;
+  });
 }
 
 async function getPackageFiles(){
