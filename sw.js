@@ -5,7 +5,7 @@
 
 const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
-const CACHE_KEY = 'cardpairs1.1';
+const CACHE_KEY = 'cardpairs1.2';
 const MAX_CONCURRENT_FETCHES = 80;
 const MAX_RETRIES = 3;
 const PROGRESS_FREQ_MS = 1000;

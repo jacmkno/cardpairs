@@ -1,7 +1,14 @@
 {
-  "pwa": [
-    "client.js",
-    "icons"
+  "pwa/icons": [
+    "128x128.png",
+    "144x144.png",
+    "152x152.png",
+    "192x192.png",
+    "384x384.png",
+    "48x48.png",
+    "512x512.png",
+    "72x72.png",
+    "96x96.png"
   ],
   "OS.windows": [
     "fonts/NotoColorEmoji_WindowsCompatible.ttf"
