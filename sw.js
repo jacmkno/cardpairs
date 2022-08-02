@@ -5,7 +5,7 @@
 
 const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
-const CACHE_KEY = 'cardpairs1.3';
+const CACHE_KEY = 'cardpairs1.4';
 const MAX_CONCURRENT_FETCHES = 80;
 const MAX_RETRIES = 2;
 const PROGRESS_FREQ_MS = 1000;
@@ -16,8 +16,13 @@ const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-win
 let installed = false;
 
 function cacheUrl(url, cache, attempts=0){
+  const timestamp = new Date().getTime();
+  let fUrl = url;
+  if(fUrl.indexOf('?') >= 0) fUrl += '&timestamp=' + timestamp;
+  else fUrl += '?timestamp=' + timestamp;
+
   return Promise.race([
-    fetch(url), 
+    fetch(fUrl), 
     new Promise(r => setTimeout(r, REQUEST_TIMEOUT_MS))
   ]).then(response => {
     if (!(response || {}).ok){
@@ -90,23 +95,24 @@ async function getPackageFiles(){
     .then(r => r.json());
   const files = [];
   for(let k in package){
+    if(k == 'timestamp') continue;
     if(!k.startsWith('OS')){
       files.push(...package[k].map(v=>k + '/' + v))
     }else if(k == `OS.${OS}`){
       files.push(...package[k])
     }
   }
-  return files;
+  return {files, timestamp: package.timestamp || 1};
 }
 
 async function checkInstalled(){
   await Promise.all([
     caches.open(CACHE_KEY).then(c => c.keys()), 
     getPackageFiles()
-  ]).then(([cachedKeys, files]) => {
+  ]).then(([cachedKeys, {files, timestamp}]) => {
     // Basic cache consistency check. Just check the number of cached files.
     // TODO: Sould probably check each of the keys but this is good enough for now.
-    installed = cachedKeys.length >= files.length + CORE_FILES.length;
+    installed = (cachedKeys.length >= files.length + CORE_FILES.length) ? timestamp : false;
   }).catch(e => {
     installed = false;
   });
@@ -131,9 +137,9 @@ self.addEventListener('message', (event) => {
   console.log('Event: message', event.data);
   if(!event.data) return;
   if(event.data.cmd === 'LOAD_ASSETS') {
-    getPackageFiles().then(async files => {
+    getPackageFiles().then(async ({files, timestamp}) => {
       return loadFiles(files, event.source).then(
-        () => installed = true
+        () => installed = timestamp
       );
     });
   }
@@ -147,7 +153,10 @@ self.addEventListener('fetch', function(fetchEvent) {
   
   fetchEvent.respondWith(
     caches.match(fetchEvent.request).then(async cached => {
-      if(cached) return cached;
+      if(cached) {
+        console.log('CACHE.HIT:', fetchEvent.request.url);
+        return cached;
+      }
       if(installed && (!await checkInstalled()) && fetchEvent.clientId){
         const client = await clients.get(fetchEvent.clientId);
         if (client) {

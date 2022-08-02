@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 .cards div[card] { background: gray; overflow: hidden; position:relative; }
 .cards div[card]:hover, .cards div[card].pressed { background: rgb(102, 114, 133); }
 .cards div[card] .img { position: absolute; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%) scale(var(--cardzoom)); text-align: center; font-size: calc(var(--size) * 0.8); line-height: 100%; }

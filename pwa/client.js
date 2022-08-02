@@ -12,7 +12,7 @@ window.addEventListener('load', function(){
     }
 
     navigator.serviceWorker.ready.then((registration) => {
-      console.log('Service Worker Connected...');
+      console.log('Service Worker Connected 2...');
       return (new Promise((done, fail) => {
         const t0 = new Date().getTime();
         const i = setInterval(()=> {
@@ -26,10 +26,25 @@ window.addEventListener('load', function(){
         }, 100);
       }))
     }).then(() => {
+      console.log('Checking installed version...', data.isInstalled);
       return new Promise(r => {
         window.onPWAMessage = function(data){
-          if(data.isInstalled !== undefined){
+          if(data && data.isInstalled !== undefined){
             setInstalled(data.isInstalled);
+
+            if(data.isInstalled){
+              console.log('APP INSTALLED:', data.isInstalled);
+              fetch('package.json?' + new Date().getTime()).then(p => p.json()).then(({timestamp=null})=>{
+                console.log('SERVER VERSION:', timestamp);
+                if(!timestamp) return;
+                let current = parseInt(data.isInstalled);
+                if(isNaN(current)) current = 0;
+                if(timestamp > current){
+                  document.body.setAttribute('upgradable', 1);
+                }
+              })  
+            }
+                      
             r(data.isInstalled);
           }
         }

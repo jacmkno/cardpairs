@@ -19,18 +19,19 @@
         <script src="cards.js"></script>
         <style>
             @import "cards.css";
-            BODY:not(.pwa-available) .opts button[onclick*="installPWA"], 
-            BODY[pwainstalled="1"] .opts button[onclick*="installPWA"] {
+            BODY:not(.pwa-available) .opts button[onclick="installPWA()"], 
+            BODY[pwainstalled="1"] .opts button[onclick="installPWA()"],
+            BODY:not([upgradable]) .opts button[onclick="upgradePWA()"]{
               display: none;
             }
-            .opts button[onclick*="installPWA"] {
+            .opts button[onclick="installPWA()"] {
               width: auto;
               padding: 0 0.5em;
             }
-            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick*="installPWA"]::after {
+            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick="installPWA()"]::after {
               content: var(--pwa-install-progress-suffix);
             }
-            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick*="installPWA"]{
+            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick="installPWA()"]{
               pointer-events: none;
             }
         </style>
@@ -84,6 +85,7 @@
           <button permanent settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
           <button permanent onclick="showAll()"><b>👁</b></button>
           <button title="Install as App or to use offline" permanent onclick="installPWA()"><b>APP</b></button>
+          <button title="Upgrade available. Click to upgrade" permanent onclick="upgradePWA()"><b>UPG</b></button>
         </div>
     </body>
 </html>
