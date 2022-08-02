@@ -5,9 +5,9 @@
 
 const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
-const CACHE_KEY = 'cardpairs1.2';
+const CACHE_KEY = 'cardpairs1.3';
 const MAX_CONCURRENT_FETCHES = 80;
-const MAX_RETRIES = 0;
+const MAX_RETRIES = 2;
 const PROGRESS_FREQ_MS = 1000;
 const REQUEST_TIMEOUT_MS = 3000;
 const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows';
@@ -42,11 +42,12 @@ async function loadFiles(files, client = null){
     if(client) {
       const progress = {loading: files.length, remaining: cFiles.length, pending: Object.keys(pending).length, timestamp: new Date().getTime()};
       console.log('LOADING PROGRESS:', progress)
-      client.postMessage(progress);
+      return client.postMessage(progress);
     }
   }
 
   return new Promise(async (done, fail)=>{
+    let failed = false;
     while(cFiles.length){
       let bufferSize = Object.keys(pending).length;
       if(bufferSize < MAX_CONCURRENT_FETCHES){
@@ -54,27 +55,31 @@ async function loadFiles(files, client = null){
           const next = cFiles.shift();
           pending[id] = cacheUrl(next, cache)
             .then(() => delete pending[id])
-            .catch(fail);
+            .catch(e => {
+              failed = true;
+              fail(e);
+            });
         })(cnt);
         cnt ++; bufferSize ++;
       }
       if(bufferSize >= MAX_CONCURRENT_FETCHES){
         await new Promise(r => setTimeout(r, 300));
       }
+      if(failed) return;
       if(new Date().getTime() - t0 > PROGRESS_FREQ_MS){
-        notifyProgress();
+        await notifyProgress();
         t0 = new Date().getTime();
       }
     }
     await Promise.all(Object.values(pending));
-    notifyProgress();
+    await notifyProgress();
 
     done();
-  }).catch(e => {
-    const progress = {loading: files.length, remaining: cFiles.length, error: e, pending: Object.keys(pending).length};
+  }).catch(async e => {
+    const progress = { loading: files.length, remaining: cFiles.length, error: e, pending: Object.keys(pending).length };
     if(client) {
       console.log('FILES LOADING FAILED...', progress)
-      client.postMessage(progress);
+      await client.postMessage(progress);
     }
     throw e;
   });

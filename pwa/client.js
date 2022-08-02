@@ -42,7 +42,7 @@ window.addEventListener('load', function(){
       console.log('Service Worker Is Available');
       document.body.classList.add('pwa-available');
 
-      window.installPWA = function(){  
+      window.installPWA = function(){
         return new Promise((done, fail) => {
           window.onPWAMessage = function(data){
             if(data.loading !== undefined){
