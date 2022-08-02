@@ -7,7 +7,7 @@ const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'
 
 const CACHE_KEY = 'cardpairs1.2';
 const MAX_CONCURRENT_FETCHES = 80;
-const MAX_RETRIES = 3;
+const MAX_RETRIES = 0;
 const PROGRESS_FREQ_MS = 1000;
 const REQUEST_TIMEOUT_MS = 3000;
 const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows';
@@ -20,7 +20,7 @@ function cacheUrl(url, cache, attempts=0){
     fetch(url), 
     new Promise(r => setTimeout(r, REQUEST_TIMEOUT_MS))
   ]).then(response => {
-    if (!response.ok){
+    if (!(response || {}).ok){
       if(attempts >= MAX_RETRIES){
         throw Error("Response not ok");
       }else{
