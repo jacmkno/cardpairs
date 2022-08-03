@@ -34,15 +34,17 @@ window.addEventListener('load', function(){
 
             if(data.isInstalled){
               console.log('APP INSTALLED:', data.isInstalled);
-              fetch('package.json?' + new Date().getTime()).then(p => p.json()).then(({timestamp=null})=>{
-                console.log('SERVER VERSION:', timestamp);
-                if(!timestamp) return;
-                let current = parseInt(data.isInstalled);
-                if(isNaN(current)) current = 0;
-                if(timestamp > current){
-                  document.body.setAttribute('upgradable', 1);
-                }
-              })  
+              fetch('package.json?' + new Date().getTime())
+                .then(r => r.status === 200 ? r.json() : {})
+                .then(({timestamp=null}) => {
+                  console.log('SERVER VERSION:', timestamp);
+                  if(!timestamp) return;
+                  let current = parseInt(data.isInstalled);
+                  if(isNaN(current)) current = 0;
+                  if(timestamp > current){
+                    document.body.setAttribute('upgradable', 1);
+                  }
+                });
             }
                       
             r(data.isInstalled);

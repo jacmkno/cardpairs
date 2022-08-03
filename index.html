@@ -26,7 +26,7 @@
             }
             .opts button[onclick="installPWA()"] {
               width: auto;
-              padding: 0 0.5em;
+              padding: 0 0.36em;
             }
             BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick="installPWA()"]::after {
               content: var(--pwa-install-progress-suffix);
@@ -84,8 +84,8 @@
           <button onclick="toggleFullScreen()"><b>⬕</b></button>
           <button permanent settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
           <button permanent onclick="showAll()"><b>👁</b></button>
-          <button title="Install as App or to use offline" permanent onclick="installPWA()"><b>APP</b></button>
-          <button title="Upgrade available. Click to upgrade" permanent onclick="upgradePWA()"><b>UPG</b></button>
+          <button title="Install as App or to use offline" permanent onclick="installPWA()"><b style="transform: scaleY(-1); display: inline-block;">⇪</b></button>
+          <button title="Upgrade available. Click to upgrade" permanent onclick="upgradePWA()"><b>⇪</b></button>
         </div>
     </body>
 </html>

@@ -3,7 +3,7 @@
 2. Post message to app after install
 */
 
-const CORE_FILES = ['', 'index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
+const CORE_FILES = ['./', 'index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
 const CACHE_KEY = 'cardpairs1.9';
 const MAX_CONCURRENT_FETCHES = 80;
@@ -121,7 +121,7 @@ async function checkInstalled(){
 
 /* Start the service worker and cache all of the app's content */
 self.addEventListener('install', function(e) {
-  console.log('Event: install');
+  console.log('Event: install', self);
   e.waitUntil(Promise.all([
     self.skipWaiting(),  loadFiles(CORE_FILES)
   ]));
@@ -178,7 +178,13 @@ self.addEventListener('fetch', function(fetchEvent) {
           });  
         }
       }
-      return fetch(fetchEvent.request);
+      return fetch(fetchEvent.request).catch(e => new Response('<h1>Service Unavailable</h1>', {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: new Headers({
+          'Content-Type': 'text/html'
+        })
+      }));
     })
   );
 });
