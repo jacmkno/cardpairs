@@ -12,7 +12,7 @@ window.addEventListener('load', function(){
     }
 
     navigator.serviceWorker.ready.then((registration) => {
-      console.log('Service Worker Connected 2...');
+      console.log('Service Worker Connected...');
       return (new Promise((done, fail) => {
         const t0 = new Date().getTime();
         const i = setInterval(()=> {
@@ -26,7 +26,7 @@ window.addEventListener('load', function(){
         }, 100);
       }))
     }).then(() => {
-      console.log('Checking installed version...', data.isInstalled);
+      console.log('Checking installed version...');
       return new Promise(r => {
         window.onPWAMessage = function(data){
           if(data && data.isInstalled !== undefined){
@@ -56,44 +56,6 @@ window.addEventListener('load', function(){
     }).then(() => {
       console.log('Service Worker Is Available');
       document.body.classList.add('pwa-available');
-
-      window.installPWA = function(){
-        return new Promise((done, fail) => {
-          window.onPWAMessage = function(data){
-            if(data.loading !== undefined){
-              if(data.error){
-                return fail(data.error);
-              }
-              if(!data.remaining){
-                done();
-              } else {
-                const progress = data.loading 
-                  ? (data.loading - data.remaining) / data.loading
-                  : 1;
-                document.body.style.setProperty(
-                  '--pwa-install-progress', progress
-                );
-                document.body.style.setProperty(
-                  '--pwa-install-progress-suffix', `' ${Math.floor(100 * progress)}%'`
-                );
-                console.log('PWA Install Progress: ', Math.floor(100 * progress) + '%')
-              }
-            }
-            navigator.serviceWorker.controller.postMessage({
-              cmd: 'KEEP_ALIVE',
-              timestamp: new Date().getTime()
-            });
-          }
-          navigator.serviceWorker.controller.postMessage({
-            cmd: 'LOAD_ASSETS',
-          });    
-        })
-        .then(e => setInstalled(true))
-        .catch(e => {
-          setInstalled(false);
-          throw e;
-        });
-      }
     }).catch(e=>{
       setInstalled(false);
       console.log('ERROR:', e);
@@ -109,6 +71,68 @@ window.addEventListener('load', function(){
         window.onPWAMessage(event.data);
       }
     });
+
+    window.installPWA = function(){
+      return new Promise((done, fail) => {
+        window.onPWAMessage = function(data){
+          if(data.loading !== undefined){
+            if(data.error){
+              return fail(data.error);
+            }
+            if(data.remaining){
+              const progress = data.loading 
+                ? (data.loading - data.remaining) / data.loading
+                : 1;
+              document.body.style.setProperty(
+                '--pwa-install-progress', progress
+              );
+              document.body.style.setProperty(
+                '--pwa-install-progress-suffix', `' ${Math.floor(100 * progress)}%'`
+              );
+              console.log('PWA Install Progress: ', Math.floor(100 * progress) + '%')
+            }
+          }
+
+          if(data.isInstalled){
+            setInstalled(data.isInstalled);
+            done();
+          }
+
+          navigator.serviceWorker.controller.postMessage({
+            cmd: 'KEEP_ALIVE',
+            timestamp: new Date().getTime()
+          });
+        }
+        navigator.serviceWorker.controller.postMessage({
+          cmd: 'LOAD_ASSETS',
+        });
+      })
+      .catch(e => {
+        setInstalled(false);
+        throw e;
+      });
+    }
+    
+    window.upgradePWA = async function(){
+
+      document.body.removeAttribute('upgradable');
+      
+      await (await navigator.serviceWorker.getRegistrations())[0].update();
+      
+      await new Promise(r => {
+        window.onPWAMessage = function(data){
+          if(data.uninstalled) r();
+        }
+
+        navigator.serviceWorker.controller.postMessage({
+          cmd: 'UNINSTALL',
+        });
+      });
+
+      setInstalled(false);
+      
+      return window.installPWA();
+    }
 
     navigator.serviceWorker
       .register('./sw.js')

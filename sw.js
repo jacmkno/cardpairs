@@ -3,9 +3,9 @@
 2. Post message to app after install
 */
 
-const CORE_FILES = ['index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
+const CORE_FILES = ['', 'index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
-const CACHE_KEY = 'cardpairs1.4';
+const CACHE_KEY = 'cardpairs1.9';
 const MAX_CONCURRENT_FETCHES = 80;
 const MAX_RETRIES = 2;
 const PROGRESS_FREQ_MS = 1000;
@@ -15,7 +15,7 @@ const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-win
 
 let installed = false;
 
-function cacheUrl(url, cache, attempts=0){
+function cacheUrl(url, cache, attempts = 0){
   const timestamp = new Date().getTime();
   let fUrl = url;
   if(fUrl.indexOf('?') >= 0) fUrl += '&timestamp=' + timestamp;
@@ -91,7 +91,7 @@ async function loadFiles(files, client = null){
 }
 
 async function getPackageFiles(){
-  const package = await caches.match('package.json')
+  const package = await caches.open(CACHE_KEY).then(c => c.match('package.json'))
     .then(r => r.json());
   const files = [];
   for(let k in package){
@@ -139,12 +139,24 @@ self.addEventListener('message', (event) => {
   if(event.data.cmd === 'LOAD_ASSETS') {
     getPackageFiles().then(async ({files, timestamp}) => {
       return loadFiles(files, event.source).then(
-        () => installed = timestamp
+        () => {
+          installed = timestamp;
+          event.source.postMessage({isInstalled: installed});
+        }
       );
+    }).catch(e => {
+      console.log('Faild to get Package Files:', e);
+      const progress = { loading: 1, remaining: 1, error: e, pending: 0 };
+      event.source.postMessage(progress);
     });
   }
   if(event.data.cmd === 'GET_STATUS') {
     event.source.postMessage({isInstalled: installed})
+  }
+  if(event.data.cmd === 'UNINSTALL'){
+    caches.delete(CACHE_KEY)
+      .then( () => loadFiles(CORE_FILES))
+      .then( () => event.source.postMessage({uninstalled: true}) )
   }
 });
 
@@ -152,7 +164,7 @@ self.addEventListener('fetch', function(fetchEvent) {
   console.log('Event: fetch', fetchEvent.request.url, installed);
   
   fetchEvent.respondWith(
-    caches.match(fetchEvent.request).then(async cached => {
+    caches.open(CACHE_KEY).then(c => c.match(fetchEvent.request)).then(async cached => {
       if(cached) {
         console.log('CACHE.HIT:', fetchEvent.request.url);
         return cached;
