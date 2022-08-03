@@ -4,9 +4,36 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta name="google" content="notranslate" />
-        <script src="cards.js?11"></script>
+
+        <link rel="manifest" href="manifest.json">
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="pwa/icons/152x152.png">
+        <meta name="theme-color" content="white"/>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="Card Matching Game">
+        <meta name="msapplication-TileImage" content="pwa/icon-144x144.png">
+        <meta name="msapplication-TileColor" content="#FFFFFF">
+
+        <script src="pwa/client.js"></script>
+        <script src="cards.js"></script>
         <style>
-            @import "cards.css?3";
+            @import "cards.css";
+            BODY:not(.pwa-available) .opts button[onclick="installPWA()"], 
+            BODY[pwainstalled="1"] .opts button[onclick="installPWA()"],
+            BODY:not([upgradable]) .opts button[onclick="upgradePWA()"]{
+              display: none;
+            }
+            .opts button[onclick="installPWA()"] {
+              width: auto;
+              padding: 0 0.36em;
+            }
+            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick="installPWA()"]::after {
+              content: var(--pwa-install-progress-suffix);
+            }
+            BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick="installPWA()"]{
+              pointer-events: none;
+            }
         </style>
         <script>
           function showAll(){
@@ -57,6 +84,8 @@
           <button onclick="toggleFullScreen()"><b>⬕</b></button>
           <button permanent settings onclick="document.body.classList.toggle(`settings`)"><b></b></button>
           <button permanent onclick="showAll()"><b>👁</b></button>
+          <button title="Install as App or to use offline" permanent onclick="installPWA()"><b style="transform: scaleY(-1); display: inline-block;">⇪</b></button>
+          <button title="Upgrade available. Click to upgrade" permanent onclick="upgradePWA()"><b>⇪</b></button>
         </div>
     </body>
 </html>
