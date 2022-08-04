@@ -162,7 +162,7 @@ self.addEventListener('message', (event) => {
 
 self.addEventListener('fetch', function(fetchEvent) {
   console.log('Event: fetch', fetchEvent.request.url, installed);
-  
+  if(!installed) return fetch(fetchEvent.request);
   fetchEvent.respondWith(
     caches.open(CACHE_KEY).then(c => c.match(fetchEvent.request)).then(async cached => {
       if(cached) {
@@ -178,13 +178,7 @@ self.addEventListener('fetch', function(fetchEvent) {
           });  
         }
       }
-      return fetch(fetchEvent.request).catch(e => new Response('<h1>Service Unavailable</h1>', {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: new Headers({
-          'Content-Type': 'text/html'
-        })
-      }));
+      return fetch(fetchEvent.request);
     })
   );
 });
