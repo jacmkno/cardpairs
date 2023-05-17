@@ -1,6 +1,7 @@
 /*
 1. Complete install after caching just index
 2. Post message to app after install
+v: 1.0.0
 */
 
 const CORE_FILES = ['./', 'index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
