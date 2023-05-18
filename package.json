@@ -13,6 +13,10 @@
   "OS.windows": [
     "fonts/NotoColorEmoji_WindowsCompatible.ttf"
   ],
+  "app": [
+    "cards.css",
+    "cards.js"
+  ],
   "cards": [
     "cards-fontawesome.js",
     "cards-utf8-activities.json",
@@ -2609,5 +2613,5 @@
     "zombie.mp3",
     "zzz.mp3"
   ],
-  "timestamp": 1659552186066
+  "timestamp": 1684376622555
 }
