@@ -6,7 +6,7 @@
 const CORE_FILES = ['./', 'index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
 const CACHE_KEY = 'cardpairs';
-const VERSION = '2.1';
+const VERSION = '2.2';
 const MAX_CONCURRENT_FETCHES = 80;
 const MAX_RETRIES = 2;
 const PROGRESS_FREQ_MS = 1000;
@@ -123,11 +123,14 @@ async function criticalCacheGet(url, event = null){
   if(!cached) {
     await loadFiles([url]);
     cached = await caches.open(CACHE_KEY).then(c => c.match(url));
+    
   }
 
-  caches.delete(CACHE_KEY)
+  if(!cached){
+    caches.delete(CACHE_KEY)
     .then( () => loadFiles(CORE_FILES))
     .then( () => event ? event.source.postMessage({uninstalled: true}): null );
+  }
 
   return cached.json();
 }
@@ -175,7 +178,12 @@ self.addEventListener('message', async (event) => {
     });
   }
   if(event.data.cmd === 'GET_STATUS') {
-    event.source.postMessage({isInstalled: await getInstalled()})
+    Promise.all([
+      getInstalled(), 
+      getPackageFiles(event).then(({files, timestamp}) => timestamp)
+    ]).then(([isInstalled, packageTimestamp])=>{
+      event.source.postMessage({isInstalled, packageTimestamp})
+    })
   }
   if(event.data.cmd === 'UNINSTALL'){
     caches.delete(CACHE_KEY)

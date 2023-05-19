@@ -40,7 +40,7 @@ window.addEventListener('load', function(){
                 .then(({timestamp=null}) => {
                   console.log('PACKAGE VERSION:', timestamp);
                   if(!timestamp) return;
-                  let current = parseInt(data.isInstalled);
+                  let current = parseInt(data.packageTimestamp);
                   if(isNaN(current)) current = 0;
                   if(timestamp > current){
                     document.body.setAttribute('upgradable', 1);
