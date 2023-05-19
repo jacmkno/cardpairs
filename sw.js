@@ -1,12 +1,12 @@
 /*
 1. Complete install after caching just index
 2. Post message to app after install
-v: 1.0.0
 */
 
 const CORE_FILES = ['./', 'index.html', 'package.json', 'pwa/client.js', 'favicon.ico'];
 
-const CACHE_KEY = 'cardpairs1.9';
+const CACHE_KEY = 'cardpairs';
+const VERSION = '2.1';
 const MAX_CONCURRENT_FETCHES = 80;
 const MAX_RETRIES = 2;
 const PROGRESS_FREQ_MS = 1000;
@@ -14,7 +14,31 @@ const REQUEST_TIMEOUT_MS = 3000;
 const OS = navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows';
 
 
-let installed = false;
+
+async function getCacheValue(key) {
+  const cache = await caches.open(CACHE_KEY);
+  const response = await cache.match(key);
+  if (response) {
+    const data = await response.text();
+    return data;
+  }
+  return null;
+}
+
+// Set the value in cache
+async function setCacheValue(key, value) {
+  const cache = await caches.open(CACHE_KEY);
+  const response = new Response(value);
+  await cache.put(key, response);
+}
+
+async function setInstalled(){
+  await setCacheValue('_installed_version', VERSION);
+}
+
+async function getInstalled(){
+  return getCacheValue('_installed_version').then(v => v == VERSION)
+}
 
 function cacheUrl(url, cache, attempts = 0){
   const timestamp = new Date().getTime();
@@ -33,7 +57,10 @@ function cacheUrl(url, cache, attempts = 0){
         return cacheUrl(url, cache, attempts + 1);
       }
     }
-    return cache.put(url, response);
+    if (response.status === 200) {
+      return cache.put(url, response);
+    }
+    return null;
   });
 }
 
@@ -91,9 +118,22 @@ async function loadFiles(files, client = null){
   });
 }
 
-async function getPackageFiles(){
-  const package = await caches.open(CACHE_KEY).then(c => c.match('package.json'))
-    .then(r => r.json());
+async function criticalCacheGet(url, event = null){
+  let cached = await caches.open(CACHE_KEY).then(c => c.match(url));
+  if(!cached) {
+    await loadFiles([url]);
+    cached = await caches.open(CACHE_KEY).then(c => c.match(url));
+  }
+
+  caches.delete(CACHE_KEY)
+    .then( () => loadFiles(CORE_FILES))
+    .then( () => event ? event.source.postMessage({uninstalled: true}): null );
+
+  return cached.json();
+}
+
+async function getPackageFiles(event){
+  const package = await criticalCacheGet('package.json', event);
   const files = [];
   for(let k in package){
     if(k == 'timestamp') continue;
@@ -104,20 +144,6 @@ async function getPackageFiles(){
     }
   }
   return {files, timestamp: package.timestamp || 1};
-}
-
-async function checkInstalled(){
-  await Promise.all([
-    caches.open(CACHE_KEY).then(c => c.keys()), 
-    getPackageFiles()
-  ]).then(([cachedKeys, {files, timestamp}]) => {
-    // Basic cache consistency check. Just check the number of cached files.
-    // TODO: Sould probably check each of the keys but this is good enough for now.
-    installed = (cachedKeys.length >= files.length + CORE_FILES.length) ? timestamp : false;
-  }).catch(e => {
-    installed = false;
-  });
-  return installed;
 }
 
 /* Start the service worker and cache all of the app's content */
@@ -131,20 +157,17 @@ self.addEventListener('install', function(e) {
 self.addEventListener('activate', event => {
   console.log('Event: activate');
   event.waitUntil(clients.claim());
-  checkInstalled();  
 });
 
-self.addEventListener('message', (event) => {
+self.addEventListener('message', async (event) => {
   console.log('Event: message', event.data);
   if(!event.data) return;
   if(event.data.cmd === 'LOAD_ASSETS') {
-    getPackageFiles().then(async ({files, timestamp}) => {
-      return loadFiles(files, event.source).then(
-        () => {
-          installed = timestamp;
-          event.source.postMessage({isInstalled: installed});
-        }
-      );
+    getPackageFiles(event).then(async ({files, timestamp}) => {
+      return loadFiles(files, event.source).then(async () => {
+          await setInstalled();
+          event.source.postMessage({isInstalled: await getInstalled()});
+      });
     }).catch(e => {
       console.log('Faild to get Package Files:', e);
       const progress = { loading: 1, remaining: 1, error: e, pending: 0 };
@@ -152,34 +175,30 @@ self.addEventListener('message', (event) => {
     });
   }
   if(event.data.cmd === 'GET_STATUS') {
-    event.source.postMessage({isInstalled: installed})
+    event.source.postMessage({isInstalled: await getInstalled()})
   }
   if(event.data.cmd === 'UNINSTALL'){
     caches.delete(CACHE_KEY)
       .then( () => loadFiles(CORE_FILES))
       .then( () => event.source.postMessage({uninstalled: true}) )
   }
+  if(event.data.cmd === 'GET_VERSION') {
+    event.source.postMessage({version: VERSION});
+  }
+
 });
 
 self.addEventListener('fetch', function(fetchEvent) {
-  console.log('Event: fetch', fetchEvent.request.url, installed);
-  if(!installed) return fetch(fetchEvent.request);
-  fetchEvent.respondWith(
-    caches.open(CACHE_KEY).then(c => c.match(fetchEvent.request)).then(async cached => {
-      if(cached) {
-        console.log('CACHE.HIT:', fetchEvent.request.url);
-        return cached;
-      }
-      if(installed && (!await checkInstalled()) && fetchEvent.clientId){
-        const client = await clients.get(fetchEvent.clientId);
-        if (client) {
-          client.postMessage({
-            reinstall: 'cache-miss',
-            url: fetchEvent.request.url
-          });  
-        }
-      }
-      return fetch(fetchEvent.request);
-    })
-  );
+  fetchEvent.respondWith((async ()=>{
+    console.log('Event: fetch', fetchEvent.request.url);
+    const client = fetchEvent.clientId ? await clients.get(fetchEvent.clientId) : null;  
+    const cache = await caches.open(CACHE_KEY);
+    const cached = await cache.match(fetchEvent.request);
+  
+    if (client) client.postMessage({
+      message:  '(CACHE ' + ((cached ? `HIT` : 'MISS') + `) ${fetchEvent.request.url}`),
+    });
+
+    return cached || fetch(fetchEvent.request.url);
+  })());
 });

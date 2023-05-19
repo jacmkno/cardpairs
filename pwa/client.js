@@ -21,7 +21,8 @@ window.addEventListener('load', function(){
             done();
           }
           if(new Date().getTime() - t0 > 5000){
-            fail(new Error('No controller after 5 seconds'));
+            document.body.classList.add('pwa-retry'); // Display a button to retry loading PWA (refresh the page)
+            fail(new Error('No controller after 5 seconds, disabling pwa functionality. Probably CTRL + SHIFT + R refresh. '));
           }
         }, 100);
       }))
@@ -37,7 +38,7 @@ window.addEventListener('load', function(){
               fetch('package.json?' + new Date().getTime())
                 .then(r => r.status === 200 ? r.json() : {})
                 .then(({timestamp=null}) => {
-                  console.log('SERVER VERSION:', timestamp);
+                  console.log('PACKAGE VERSION:', timestamp);
                   if(!timestamp) return;
                   let current = parseInt(data.isInstalled);
                   if(isNaN(current)) current = 0;
@@ -64,7 +65,7 @@ window.addEventListener('load', function(){
     });
 
     navigator.serviceWorker.addEventListener('message', (event) => {
-      console.log('MESSAGE:', event.data);
+      console.log('MESSAGE:', event.data.message || event.data);
       if(event.data.reinstall){
         setInstalled(false);
         return;
