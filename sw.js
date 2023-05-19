@@ -188,35 +188,17 @@ self.addEventListener('message', async (event) => {
 
 });
 
-self.addEventListener('fetch', async function(fetchEvent) {
-  console.log('Event: fetch', fetchEvent.request.url);
-  const client = fetchEvent.clientId ? await clients.get(fetchEvent.clientId) : null;
-  const isJSON = fetchEvent.request.url.endsWith('.json');
-
-  const cache = await caches.open(CACHE_KEY);
-  const cached = await cache.match(fetchEvent.request);
-  const isCached = cached?true:false;
-
-  if (client) client.postMessage({
-    message:  'XXXC:' + ((isCached ? `HIT (${isJSON ? 'JSON' : 'OTHER'})` : 'MISS') + `: ${fetchEvent.request.url}`),
-  });
-
-  fetchEvent.respondWith(new Response('The client never gets this response....'));
-  return;
-
-  try {
-    if(1){
-      if(1){
-        fetchEvent.respondWith(new Response('The client never gets this response....'));
-      }else{
-        fetchEvent.respondWith(cached);
-      }
-    }else{
-      fetchEvent.respondWith(fetch(fetchEvent.request));
-    }  
-  }catch(e){
+self.addEventListener('fetch', function(fetchEvent) {
+  fetchEvent.respondWith((async ()=>{
+    console.log('Event: fetch', fetchEvent.request.url);
+    const client = fetchEvent.clientId ? await clients.get(fetchEvent.clientId) : null;  
+    const cache = await caches.open(CACHE_KEY);
+    const cached = await cache.match(fetchEvent.request);
+  
     if (client) client.postMessage({
-      message:  e,
+      message:  '(CACHE ' + ((cached ? `HIT` : 'MISS') + `) ${fetchEvent.request.url}`),
     });
-  }
+
+    return cached || fetch(fetchEvent.request.url);
+  })());
 });
