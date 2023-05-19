@@ -201,7 +201,7 @@ self.addEventListener('fetch', function(fetchEvent) {
     console.log('Event: fetch', fetchEvent.request.url);
     const client = fetchEvent.clientId ? await clients.get(fetchEvent.clientId) : null;  
     const cache = await caches.open(CACHE_KEY);
-    const cached = await cache.match(fetchEvent.request);
+    const cached = await cache.match(fetchEvent.request.url);
   
     if (client) client.postMessage({
       message:  '(CACHE ' + ((cached ? `HIT` : 'MISS') + `) ${fetchEvent.request.url}`),
