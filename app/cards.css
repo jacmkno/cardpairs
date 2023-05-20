@@ -145,17 +145,6 @@ BODY[os="windows"] .cards .img[template="char"]{
   /*src: url("./fonts/BabelStoneFlags.ttf"); */
 }
 
-.game:not(.completed) .cards div[card][card].paired {
-  background: #9fc89f;
-}
-.game:not(.completed) .cards div[card].paired:not(.hover) img {
-  opacity: 0;
-}
-.game:not(.completed) .cards div[card].paired:not(.hover) .img, 
-.game:not(.completed) .cards div[card].paired:not(.hover) .desc {
-  opacity: 0;
-}
-
 body{
   background: black !important;
 }
