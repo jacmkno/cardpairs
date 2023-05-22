@@ -141,8 +141,8 @@ BODY[os="windows"] .cards .img[template="char"]{
 
 @font-face {
   font-family: "WindowsFlags"; 
-  src: url("./fonts/NotoColorEmoji_WindowsCompatible.ttf"); 
-  /*src: url("./fonts/BabelStoneFlags.ttf"); */
+  src: url("../fonts/NotoColorEmoji_WindowsCompatible.ttf"); 
+  /*src: url("../fonts/BabelStoneFlags.ttf"); */
 }
 
 body{
