@@ -235,6 +235,6 @@ body.showAll .cards > div[card] .wrap3dcard
   border-radius: calc(var(--size) * 0.08);
 }
 
-.fullscreen button[onclick="toggleFullScreen()"], body:.settings button[settings], body.showAll button[onclick="showAll()"] {
+.fullscreen button[onclick="toggleFullScreen()"], body.settings button[settings], body.showAll button[onclick="showAll()"] {
   background: #69999e;
 }
