@@ -142,3 +142,39 @@ window.addEventListener('load', function(){
       .then(function() { console.log('Service Worker Registered'); });
   }
 });
+
+/*Auto launch*/
+
+let deferredInstallPrompt;
+
+window.addEventListener('beforeinstallprompt', function(event) {
+  // Prevent the default browser prompt
+  console.log('beforeinstallprompt');
+  event.preventDefault();
+
+  // Store the event for later use
+  deferredInstallPrompt = event;
+
+  // Show your custom install button or UI
+  showInstallButton();
+});
+
+// Function to handle the installation logic when the user clicks the install button
+function installPWA() {
+  if (deferredInstallPrompt) {
+    // Trigger the installation prompt
+    deferredInstallPrompt.prompt();
+
+    // Wait for the user to respond to the prompt
+    deferredInstallPrompt.userChoice.then(function(choiceResult) {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('PWA installation accepted');
+      } else {
+        console.log('PWA installation dismissed');
+      }
+
+      // Clear the deferredInstallPrompt variable
+      deferredInstallPrompt = null;
+    });
+  }
+}
