@@ -46,6 +46,8 @@ window.addEventListener('load', function(){
                     document.body.setAttribute('upgradable', 1);
                   }
                 });
+            }else if(window.matchMedia('(display-mode: standalone)').matches){
+              setTimeout(window.installPWA, 1000);
             }
                       
             r(data.isInstalled);
@@ -76,6 +78,7 @@ window.addEventListener('load', function(){
     });
 
     window.installPWA = function(){
+      promptDeviceInstall();
       return new Promise((done, fail) => {
         window.onPWAMessage = function(data){
           if(data.loading !== undefined){
@@ -148,33 +151,15 @@ window.addEventListener('load', function(){
 let deferredInstallPrompt;
 
 window.addEventListener('beforeinstallprompt', function(event) {
-  // Prevent the default browser prompt
-  console.log('beforeinstallprompt');
+  // Block automatic install prompt on load.
   event.preventDefault();
-
-  // Store the event for later use
   deferredInstallPrompt = event;
-
-  // Show your custom install button or UI
-  showInstallButton();
 });
 
 // Function to handle the installation logic when the user clicks the install button
-function installPWA() {
+function promptDeviceInstall() {
   if (deferredInstallPrompt) {
     // Trigger the installation prompt
     deferredInstallPrompt.prompt();
-
-    // Wait for the user to respond to the prompt
-    deferredInstallPrompt.userChoice.then(function(choiceResult) {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('PWA installation accepted');
-      } else {
-        console.log('PWA installation dismissed');
-      }
-
-      // Clear the deferredInstallPrompt variable
-      deferredInstallPrompt = null;
-    });
   }
 }
