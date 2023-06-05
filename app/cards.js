@@ -431,6 +431,13 @@ async function cardGame(wrapper, cols, rows, {type, url}){
       }), 50);
   };
 
+  window.addEventListener('resize', function(){
+    if(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement )
+      document.body.classList.add('fullscreen');
+    else
+      document.body.classList.remove('fullscreen');
+  })
+
   checkCompleted();
   setTimeout(_resize, 0);
 }
