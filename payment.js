@@ -1,0 +1,3 @@
+/*
+Integrate payment processing to enable access levels. call functions from session.js
+*/
