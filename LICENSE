@@ -1,21 +1,41 @@
-MIT License
+Software License Agreement
 
-Copyright (c) 2022 jacmkno
+This license agreement (the "Agreement") is a legal agreement between the licensor (the "Licensor") and any person or entity (the "User") who obtains a copy of the software and associated documentation files (the "Software").
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. Grant of License:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+   a. Free Users: The Licensor grants free users a non-exclusive, worldwide, royalty-free license to use, modify, and distribute the Software for software development training purposes only, subject to the conditions outlined in this Agreement.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   b. Paid Users: The Licensor grants paid users a non-exclusive, worldwide, and non-transferable license to use the Software for any purpose under the terms of the [specific version] of the MIT License without consideration of any other terms stipulated in this license, subject to the conditions outlined in this Agreement.
+
+2. Usage Restrictions:
+
+   a. Free Users: Free users may not use the Software for any purpose other than software development training. Redistribution, sublicensing, or selling copies of the Software, modified or unmodified, to third parties is strictly prohibited.
+
+   b. Paid Users: Paid users are granted usage rights as specified in this Agreement and under the terms of the [specific version] of the MIT License. Redistribution, sublicensing, or selling copies of the Software, modified or unmodified, to third parties is strictly prohibited.
+
+3. Warranty and Liability:
+
+   a. Warranty: The Licensor provides no warranties or guarantees regarding the Software. The Software is provided "as is" without any express or implied warranties.
+
+   b. Limitation of Liability: To the maximum extent permitted by applicable law, in no event shall the Licensor be liable for any direct, indirect, incidental, special, consequential, or exemplary damages, including but not limited to any loss of data, business interruption, or loss of profits, arising out of the use or inability to use the Software, even if the Licensor has been advised of the possibility of such damages.
+
+4. Governing Law and Jurisdiction:
+
+   a. This Agreement shall be governed by and construed in accordance with the laws of [Jurisdiction]. Any disputes arising out of or in connection with this Agreement shall be subject to the exclusive jurisdiction of the courts of [Jurisdiction].
+
+5. Entire Agreement:
+
+   a. This Agreement constitutes the entire agreement between the Licensor and the User regarding the subject matter hereof and supersedes all prior or contemporaneous agreements, understandings, and representations.
+
+6. Modification of Agreement:
+
+   a. The Licensor reserves the right to modify this Agreement at any time. Any modifications will be effective immediately upon posting of the revised Agreement. Continued use of the Software after the modifications will signify the User's acceptance of the modified Agreement.
+
+7. Severability:
+
+   a. If any provision of this Agreement is held to be invalid or unenforceable, the remaining provisions shall continue to be valid and enforceable to the fullest extent permitted by law.
+
+8. Waiver:
+
+   a. The failure of the Licensor to enforce any right or provision of this Agreement shall not constitute a waiver of such right or provision unless acknowledged and agreed to in writing.
