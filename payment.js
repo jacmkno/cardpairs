@@ -7,9 +7,7 @@ Integrate payment processing to enable access levels. call functions from sessio
 
 // Call backend for signature. Choose between fake backend and real backend according to settings set by environment variable on deployment.
 
-// Identify client by localstorage key
-
-// Check client access level with backend
+// Ask session.js to update client access level
 
 // Show payment status / confirmation popup when comming back from payment platform
 
