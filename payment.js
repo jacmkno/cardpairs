@@ -12,4 +12,6 @@ Integrate payment processing to enable access levels. call functions from sessio
 // Show payment status / confirmation popup when comming back from payment platform
 
 // Submit payment info to backend for updating status and checking signature before showing payment status.
+
+// Implement backend SDK
 */
