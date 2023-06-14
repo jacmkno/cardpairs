@@ -2,14 +2,6 @@
 Integrate payment processing to enable access levels. call functions from session.js
 */
 
-class DOM {
-  static addHtml(parentSelector, html){
-    const n = (d=>(d.innerHTML = html) && d.children[0] )(document.createElement('div'));
-    document.querySelector(parentSelector).appendChild(n);
-    return n;
-  }
-}
-
 class Payment{
   // Generate payment button
   static addBt(){
@@ -18,7 +10,14 @@ class Payment{
 
   // Generate payment popup to choose a plan
   static payOpts(){
-    
+    DOM.popup('Activate the game', 'Some plans', []);
+  }
+
+  static getPlans(){
+    return {
+      'access1': ['Access level 1', 30000],
+      'access2': ['Access level 2', 60000]
+    }
   }
   
   // Call backend for signature. Choose between fake backend and real backend according to settings set by environment variable on deployment.
@@ -32,3 +31,5 @@ class Payment{
   // Implement backend SDK
 
 }
+
+window.addEventListener('load', Payment.addBt);
