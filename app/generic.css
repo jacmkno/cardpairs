@@ -1,1 +1,28 @@
 
+.popup {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  font-size: 4em;
+  z-index: 2;
+  text-align: center;
+  background: #ffffffdb;
+  border-radius: 0.5em;
+  padding: 0.5em;
+}
+
+.bt {
+  margin: 0.3em;
+  display: inline-block;
+  padding: 0;
+  color: #f9f9f9;
+  background-color: #037f8c;
+  font-family: sans-serif;
+  line-height: 2;
+  font-size: 1rem;
+  border: 0;
+  vertical-align: middle;
+  border-radius: 10%;
+  box-shadow: 0 0 0px 2px #63c8d2; 
+}
