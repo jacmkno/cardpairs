@@ -116,6 +116,8 @@ body:not(.settings) .opts button[settings] > b:before {
   width: 2em;
   border: 0;
   vertical-align: middle;
+  border-radius: 10%;
+  box-shadow: 0 0 0px 2px #63c8d2; 
 }
 
 .cards div[card]::after {
