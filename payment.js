@@ -9,36 +9,66 @@ class Payment{
   }
 
   // Generate payment popup to choose a plan
-  static payOpts(){
-    DOM.popup('Activate the game', `Licensing plans: <ul cards>${
-      Object.entries(Payment.getPlans()).map(([key, [text, price]])=>
-        `<li><button bt purchaseRef=${key}>$${price.toLocaleString()}</button>${text}</li>`
+  static async payOpts(){
+    const plans = Object.entries(Payment.getPlans());
+    const popup = DOM.popup('Activate the game', `Licensing plans: <ul cards>${
+      plans.map(([ref, [text, price]])=>
+        `<li><button bt>$${price.toLocaleString()}</button>${text}</li>`
       ).join('')
     }</ul>`, []);
 
-    
+    popup.querySelectorAll('li > button').forEach((bt, i)=>{
+      const [ref, [text, price]] = plans[i];
+      bt.addEventListener('click', ()=>Payment.startPayment(ref, price, text));
+    });
   }
 
-  static async payuForm(ref, price, description){
+  static async hash(s, algo='md5'){
+    if(algo=='md5'){
+      return (await import('https://cdn.skypack.dev/crypto-js')).MD5(s).toString();
+    }
+    return Array.from(new Uint8Array(await crypto.subtle.digest(algo, new TextEncoder().encode(s)))).map(byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+
+  static async startPayment(ref, price, description){
+    const [
+      paymentUrl,
+      confirmationUrl,
+      ApiKey,
+      merchantId,
+      accountId,
+      referenceCode,
+      amount,
+      currency
+    ] = [
+      'https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/',
+      new URL('payu/confirmation', window.location.href).href,
+      '4Vj8eK4rloUd272L48hsrarnUA', 508029, 512321, ref, price, 'COP'
+    ];
     
-    const signature = (await import('https://cdn.skypack.dev/crypto-js')).MD5("ApiKey~merchantId~referenceCode~amount~currency").toString()
+    const signature = await Payment.hash(
+      [ApiKey, merchantId, referenceCode, amount, currency].join('~')
+    );
     
-    
-    return `<form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
-      <input name="merchantId"      type="hidden"  value="508029"   >
-      <input name="accountId"       type="hidden"  value="512321" >
-      <input name="description"     type="hidden"  value="Test PAYU"  >
+    const div = document.createElement('div');
+    div.innerHTML = `<form method="post" action="${paymentUrl}">
+      <input name="merchantId"      type="hidden"  value="${merchantId}"   >
+      <input name="accountId"       type="hidden"  value="${accountId}" >
+      <input name="description"     type="hidden"  value="${description}"  >
       <input name="referenceCode"   type="hidden"  value="${ref}" >
       <input name="amount"          type="hidden"  value="${price}"   >
       <input name="tax"             type="hidden"  value="0"  >
       <input name="taxReturnBase"   type="hidden"  value="0" >
       <input name="currency"        type="hidden"  value="COP" >
-      <input name="signature"       type="hidden"  value="7ee7cf808ce6a39b17481c54f2c57acc"  >
+      <input name="signature"       type="hidden"  value="${signature}"  >
       <input name="test"            type="hidden"  value="0" >
-      <input name="buyerEmail"      type="hidden"  value="test@test.com" >
-      <input name="responseUrl"     type="hidden"  value="http://www.test.com/response" >
-      <input name="confirmationUrl" type="hidden"  value="http://www.test.com/confirmation" >
+      <input name="responseUrl"     type="hidden"  value="${new URL('payu/response', window.location.href).href }" >
+      <input name="confirmationUrl" type="hidden"  value="${ confirmationUrl }" >
     </form>`;
+    div.style.display = 'none';
+    document.body.appendChild(div);
+    div.childNodes[0].submit();
+    document.body.removeChild(div);
   }
 
   static getPlans(){

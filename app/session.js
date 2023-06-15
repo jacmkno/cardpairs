@@ -27,7 +27,7 @@ class DOM {
       }
     })();
   
-    DOM.addHtml('BODY', `<div class="popup">
+    const rt = DOM.addHtml('BODY', `<div class="popup">
         <label>${title}</label>
         <p>${message}</p>
         <div>${
@@ -35,9 +35,11 @@ class DOM {
       }</div>
     </div>`);
   
-    document.querySelectorAll('body > .popup:last-child > div button').forEach((n, i)=>{
+    rt.querySelectorAll(':scope > div button').forEach((n, i)=>{
       n.addEventListener('click', btls[i][1]);
-    })
+    });
+    
+    return rt;
   }  
 }
 
