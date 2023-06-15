@@ -50,6 +50,7 @@ ul[cards] li{
 	margin-rightt:0;
 	background-color: #63c8d2;
 	color: white;
+	border-radius: 0.3em;
   }
 
 button[bt]:hover, a[bt]:hover {
