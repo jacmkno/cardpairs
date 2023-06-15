@@ -15,6 +15,30 @@ class Payment{
         `<li><button bt purchaseRef=${key}>$${price.toLocaleString()}</button>${text}</li>`
       ).join('')
     }</ul>`, []);
+
+    
+  }
+
+  static async payuForm(ref, price, description){
+    
+    const signature = (await import('https://cdn.skypack.dev/crypto-js')).MD5("ApiKey~merchantId~referenceCode~amount~currency").toString()
+    
+    
+    return `<form method="post" action="https://sandbox.checkout.payulatam.com/ppp-web-gateway-payu/">
+      <input name="merchantId"      type="hidden"  value="508029"   >
+      <input name="accountId"       type="hidden"  value="512321" >
+      <input name="description"     type="hidden"  value="Test PAYU"  >
+      <input name="referenceCode"   type="hidden"  value="${ref}" >
+      <input name="amount"          type="hidden"  value="${price}"   >
+      <input name="tax"             type="hidden"  value="0"  >
+      <input name="taxReturnBase"   type="hidden"  value="0" >
+      <input name="currency"        type="hidden"  value="COP" >
+      <input name="signature"       type="hidden"  value="7ee7cf808ce6a39b17481c54f2c57acc"  >
+      <input name="test"            type="hidden"  value="0" >
+      <input name="buyerEmail"      type="hidden"  value="test@test.com" >
+      <input name="responseUrl"     type="hidden"  value="http://www.test.com/response" >
+      <input name="confirmationUrl" type="hidden"  value="http://www.test.com/confirmation" >
+    </form>`;
   }
 
   static getPlans(){
