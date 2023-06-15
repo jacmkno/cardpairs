@@ -35,7 +35,7 @@ class DOM {
       }</div>
     </div>`);
   
-    document.querySelectorAll('body > .popup:last-child button').forEach((n, i)=>{
+    document.querySelectorAll('body > .popup:last-child > div button').forEach((n, i)=>{
       n.addEventListener('click', btls[i][1]);
     })
   }  

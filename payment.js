@@ -10,7 +10,11 @@ class Payment{
 
   // Generate payment popup to choose a plan
   static payOpts(){
-    DOM.popup('Activate the game', 'Some plans', []);
+    DOM.popup('Activate the game', `Licensing plans: <ul cards>${
+      Object.entries(Payment.getPlans()).map(([key, [text, price]])=>
+        `<li><button bt purchaseRef=${key}>$${price.toLocaleString()}</button>${text}</li>`
+      ).join('')
+    }</ul>`, []);
   }
 
   static getPlans(){

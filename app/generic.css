@@ -41,6 +41,22 @@ button[bt], a[bt] {
   cursor:pointer;
 }
 
+
+ul[cards] li{
+	padding: 0.35em;
+	margin: 0.5em;
+	margin-left:0;
+	margin-right:0;
+	margin-rightt:0;
+	background-color: #63c8d2;
+	color: white;
+  }
+
 button[bt]:hover, a[bt]:hover {
   filter: brightness(1.2);
+}
+
+ul[cards] {
+	list-style-type: none;
+	padding: 0;
 }
