@@ -1,8 +1,13 @@
 /*
 Integrate payment processing to enable access levels. call functions from session.js
+
+Payment response params:
+/payu/response?merchantId=508029&merchant_name=Test+PayU&merchant_address=Av+123+Calle+12&telephone=7512354&merchant_url=http%3A%2F%2Fpruebaslapv.xtrweb.com&transactionState=4&lapTransactionState=APPROVED&message=APPROVED&referenceCode=access1&reference_pol=2149787696&transactionId=dc95c59b-8b22-49ea-a09d-eb85231463c4&description=Access+level+1&trazabilityCode=CRED+-+666897398&cus=CRED+-+666897398&orderLanguage=es&extra1=&extra2=&extra3=&polTransactionState=4&signature=f91654db019d4192d8f2f7f08b65bd84&polResponseCode=1&lapResponseCode=APPROVED&risk=&polPaymentMethod=10&lapPaymentMethod=VISA&polPaymentMethodType=2&lapPaymentMethodType=CREDIT_CARD&installmentsNumber=1&TX_VALUE=30000.00&TX_TAX=.00&currency=COP&lng=es&pseCycle=&buyerEmail=testasdfasdf%40sdfasdf.com&pseBank=&pseReference1=&pseReference2=&pseReference3=&authorizationCode=682143&TX_ADMINISTRATIVE_FEE=.00&TX_TAX_ADMINISTRATIVE_FEE=.00&TX_TAX_ADMINISTRATIVE_FEE_RETURN_BASE=.00&processingDate=2023-06-15
+
 */
 
 class Payment{
+
   // Generate payment button
   static addBt(){
     return DOM.addHtml('.opts', `<button permanent="" onclick="Payment.payOpts()"><b>$</b></button>`);
