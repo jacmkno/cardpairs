@@ -126,7 +126,9 @@ class Payment{
       [ApiKey, merchantId, referenceCode, amount, currency, transactionState].join('~')
     );
 
-    const plan = Object.entries(Payment.getPlans()).filter(([,[,,ref]])=>referenceCode.startsWith(ref)).map(([plan])=>plan).pop();
+    const PLANS = Payment.getPlans();
+    const plan = Object.entries(PLANS).filter(([,[,,ref]])=>referenceCode.startsWith(ref)).map(([plan])=>plan).pop();
+
 
     const response = (expected_signature == req_signature)?({
       "4": "approved",
@@ -134,54 +136,18 @@ class Payment{
       "6": "rejected" 
     }[transactionState]??'pending'): 'invalid';
 
-    alert('Payment Response: '+ plan + ' / ' + response);
-
-    a = {
-      "paymentop": "response",
-      "merchantId": "508029",
-      "merchant_name": "Test PayU",
-      "merchant_address": "Av 123 Calle 12",
-      "telephone": "7512354",
-      "merchant_url": "http://pruebaslapv.xtrweb.com",
-      "transactionState": "4",
-      "lapTransactionState": "APPROVED",
-      "message": "APPROVED",
-      "referenceCode": "AC11219145R2697",
-      "reference_pol": "2149810463",
-      "transactionId": "c1635605-1a6d-4c2f-b80b-d63f945e8065",
-      "description": "Access level 1",
-      "trazabilityCode": "CRED - 666368061",
-      "cus": "CRED - 666368061",
-      "orderLanguage": "es",
-      "extra1": "",
-      "extra2": "",
-      "extra3": "",
-      "polTransactionState": "4",
-      "signature": "93196a8f753101c4633eaadc559eb62a",
-      "polResponseCode": "1",
-      "lapResponseCode": "APPROVED",
-      "risk": "",
-      "polPaymentMethod": "12",
-      "lapPaymentMethod": "AMEX",
-      "polPaymentMethodType": "2",
-      "lapPaymentMethodType": "CREDIT_CARD",
-      "installmentsNumber": "6",
-      "TX_VALUE": "30000.00",
-      "TX_TAX": ".00",
-      "currency": "COP",
-      "lng": "es",
-      "pseCycle": "",
-      "buyerEmail": "sadfdsf@asdfadf.com",
-      "pseBank": "",
-      "pseReference1": "",
-      "pseReference2": "",
-      "pseReference3": "",
-      "authorizationCode": "193195",
-      "TX_ADMINISTRATIVE_FEE": ".00",
-      "TX_TAX_ADMINISTRATIVE_FEE": ".00",
-      "TX_TAX_ADMINISTRATIVE_FEE_RETURN_BASE": ".00",
-      "processingDate": "2023-06-20"
-    }    
+    if(response == 'approved'){
+      const [planName] = PLANS[plan];
+      DOM.popup('Payment Confirm: ' + response, 
+        `Your plan "${planName}" has been activated.<br/>Thanks for your payment.`, 
+        [['OK', e => location = location.pathname]], false
+      );
+    }else{
+      DOM.popup('Payment Response: ' + response, 
+        `Your payment was not accepted.<br/>You can retry payment any time.`, 
+        [['OK', e => location = location.pathname]], false
+      );
+    }
   }
 
   static getPlans(){

@@ -16,11 +16,16 @@ class DOM {
     return n;
   }
 
-  static popup(title, message, buttons){
+  static popup(title, message, buttons, addCancel=true){
+    const close = ()=>document.querySelectorAll('.popup').forEach(p=>p.parentElement.removeChild(p));
     const btls = (() => {
       if(buttons){
-        const rt = Object.entries(buttons);
-        rt.unshift(['Cancel', ()=>document.querySelectorAll('.popup').forEach(p=>p.parentElement.removeChild(p))]);
+        const rt = Array.isArray(buttons)?buttons:Object.entries(buttons);
+        const closeBts = rt.filter(o=>o.length === 1);
+        if(!closeBts.length && addCancel){
+          rt.unshift(['Cancel', close]);
+        }
+        closeBts.forEach(o=>o.push(close));
         return rt;
       }else{
         return [];
@@ -36,7 +41,7 @@ class DOM {
     </div>`);
   
     rt.querySelectorAll(':scope > div button').forEach((n, i)=>{
-      n.addEventListener('click', btls[i][1]);
+      n.addEventListener('click',  e => btls[i][1](e, close));
     });
     
     return rt;
