@@ -49,3 +49,18 @@ class DOM {
 }
 
 
+class Session{
+  static setLevel(activationId, level, durationMS){
+    const L = Session.getLevels();
+    L[activationId] = [level, durationMS, new Date().getTime()];
+    localStorage.levels = JSON.stringify(L);
+  }
+
+  static getLevels(){
+    try{
+      return JSON.parse(localStorage.levels);
+    }catch(e){}
+    return {};
+  }
+}
+console.log('XXX:', Session.getLevels());

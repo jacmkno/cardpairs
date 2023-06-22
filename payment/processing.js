@@ -137,7 +137,8 @@ class Payment{
     }[transactionState]??'pending'): 'invalid';
 
     if(response == 'approved'){
-      const [planName] = PLANS[plan];
+      const [planName, [,,,duration]] = [plan, PLANS[plan]];
+      Session.setLevel(referenceCode, plan, duration);
       DOM.popup('Payment Confirm: ' + response, 
         `Your plan "${planName}" has been activated.<br/>Thanks for your payment.`, 
         [['OK', e => location = location.pathname]], false
@@ -152,8 +153,8 @@ class Payment{
 
   static getPlans(){
     return {
-      'access1': ['Access level 1', 30000, 'AC1'],
-      'access2': ['Access level 2', 60000, 'AC2']
+      'access1': ['Access level 1', 30000, 'AC1', 3600*1000*24*30],
+      'access2': ['Access level 2', 60000, 'AC2', 3600*1000*24*30]
     }
   }
 
