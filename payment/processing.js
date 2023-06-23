@@ -138,7 +138,7 @@ class Payment{
 
     if(response == 'approved'){
       const [planName, [,,,duration]] = [plan, PLANS[plan]];
-      Session.setLevel(referenceCode, plan, duration);
+      Session.activate(referenceCode, plan, duration);
       DOM.popup('Payment Confirm: ' + response, 
         `Your plan "${planName}" has been activated.<br/>Thanks for your payment.`, 
         [['OK', e => location = location.pathname]], false
