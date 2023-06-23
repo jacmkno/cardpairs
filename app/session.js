@@ -62,5 +62,103 @@ class Session{
     }catch(e){}
     return {};
   }
+
+  static async getUnifiedLevels(){
+    const byLevel = {}
+    const levels = Object.values(this.getLevels());
+    
+    levels.forEach(([
+        level, duration, startTime
+      ]) => byLevel[level] = (
+        byLevel[level] || []
+      ).concat([[duration, startTime, startTime+duration]])
+    );
+
+    Object.entries(byLevel).forEach(([level, activations]) => {
+      activations.sort(([,,endTime1], [,,endTime2]) => endTime1 - endTime2);
+      const unified = [];
+      activations.forEach(([duration, startTime, endTime], i) => {
+        if(!i) {
+          unified.push(activations[i]);
+          return;
+        }
+        const l = unified.length - 1;
+        const p = (([duration, startTime, endTime]) => (
+          {duration, startTime, endTime})
+        )(unified[l]);
+
+        if(startTime < p.endTime){
+          unified[l] = [p.duration + duration, p.startTime, p.endTime + duration];
+        }else{
+          unified.push(activations[i]);
+        }
+      });
+      byLevel[level] = unified;
+    });
+
+    return byLevel;
+  }
+
+  static async getActiveLevels(){
+    const levels = await this.getUnifiedLevels();
+    Object.entries(levels).forEach(([level, activations])=>{
+      levels[level] = activations.filter(([, startTime, endTime]) => 
+        (t => t >= startTime && t <= endTime)(new Date().getTime()) )
+    });
+    return levels;
+  }
+
+  static async test(){
+    async function test1(){
+      class TestSession extends Session{
+        static getLevels(){
+          return {
+            'a':['access1', 2592000000, 1687492166618],
+            'b':['access1', 2592000000, 1687492166618-1000*3600*24*15],
+            'c':['access1', 2592000000, 1687492166618-1000*3600*24*30],    
+          }
+        }
+      }
+      const levels = TestSession.getLevels();
+      const unified = await TestSession.getUnifiedLevels();
+      const active = await TestSession.getActiveLevels();
+      return {levels: Object.values(levels).map(([l, ...v]) => v.map(v=>v/(3600*1000*24))), unified: unified.access1.map(a=>a.map(v=>v/(3600*1000*24))), active: active.access1.map(a=>a.map(v=>v/(3600*1000*24)))}  
+    }
+
+    async function test2(){
+      class TestSession extends Session{
+        static getLevels(){
+          return {
+            'a':['access1', 2592000000, 1687492166618],
+            'b':['access1', 2592000000, 1687492166618-1000*3600*15],
+            'c':['access1', 2592000000, 1687492166618-1000*3600*30],    
+          }
+        }
+      }
+      const levels = TestSession.getLevels();
+      const unified = await TestSession.getUnifiedLevels();
+      const active = await TestSession.getActiveLevels();
+      return {levels: Object.values(levels).map(([l, ...v]) => v.map(v=>v/(3600*1000*24))), unified: unified.access1.map(a=>a.map(v=>v/(3600*1000*24))), active: active.access1.map(a=>a.map(v=>v/(3600*1000*24)))}  
+    }
+    
+    async function test3(){
+      class TestSession extends Session{
+        static getLevels(){
+          return {
+            'a':['access1', 2592000000, 1687492166618],
+            'b':['access1', 2592000000, 1687492166618-1000*3600*24*15],
+            'c':['access1', 2592000000, 1687492166618-1000*3600*24*80],    
+          }
+        }
+      }
+      const levels = TestSession.getLevels();
+      const unified = await TestSession.getUnifiedLevels();
+      const active = await TestSession.getActiveLevels();
+      return {levels: Object.values(levels).map(([l, ...v]) => v.map(v=>v/(3600*1000*24))), unified: unified.access1.map(a=>a.map(v=>v/(3600*1000*24))), active: active.access1.map(a=>a.map(v=>v/(3600*1000*24)))}  
+    }
+
+    return Promise.all([test1(), test2(), test3()]);
+  }
 }
+
 console.log('XXX:', Session.getLevels());
