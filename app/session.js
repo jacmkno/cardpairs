@@ -64,6 +64,7 @@ class Session{
         localStorage.session_level = JSON.stringify({level, expiration:new Date().getTime() + durationMS});
       }
     }
+    this.updateApp();
   }
 
   static getActivations(){
@@ -83,6 +84,9 @@ class Session{
     }catch(e){}
     return null;    
   }
-}
 
-console.log('XXX:', Session.getActivations());
+  static updateApp(){
+    document.body.setAttribute('access', (this.getLevel() || {level:'none'}).level);
+  }
+}
+window.addEventListener('load', ()=>Session.updateApp());
