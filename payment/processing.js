@@ -22,9 +22,14 @@ class Payment{
   // Generate payment popup to choose a plan
   static async payOpts(){
     const plans = Object.entries(Payment.getPlans());
-    const popup = DOM.popup('Activate the game', `Licensing plans: <ul cards>${
-      plans.map(([, [text, price]])=>
-        `<li><button bt>$${price.toLocaleString()}</button>${text}</li>`
+    const cL = Session.getLevel();
+    const popup = DOM.popup('Activate the game', `Licensing plans: <ul cards payopts>${
+      plans.filter(([level])=>!cL || cL.level == level).map(([level, [text, price]])=>
+      (cL && cL.level == level)
+        ? `<li current><button bt>$${price.toLocaleString()}</button>${text}<i>Expires in: ${
+            ((cL.expiration - new Date().getTime())/(3600*24*1000)).toFixed(1)
+          } days</i></li>`
+        : `<li><button bt>$${price.toLocaleString()}</button>${text}</li>`
       ).join('')
     }</ul>`, []);
 
