@@ -16,7 +16,7 @@ class Payment{
       Payment.checkReponse(GET);
     }
 
-    return DOM.addHtml('.opts', `<button permanent="" onclick="Payment.payOpts()"><b>$</b></button>`);
+    return DOM.addHtml('.opts', `<button permanent="" onclick="Payment.payOpts()"><b>$</b></button>`, true);
   }
 
   // Generate payment popup to choose a plan

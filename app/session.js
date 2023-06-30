@@ -10,9 +10,13 @@
 
 
 class DOM {
-  static addHtml(parentSelector, html){
+  static addHtml(parentSelector, html, whiteSpacePrefix = false){
     const n = (d=>(d.innerHTML = html) && d.children[0] )(document.createElement('div'));
-    document.querySelector(parentSelector).appendChild(n);
+    const p = document.querySelector(parentSelector);
+    if(whiteSpacePrefix){
+      p.appendChild(document.createTextNode('\n'));
+    }
+    p.appendChild(n);
     return n;
   }
 
@@ -50,6 +54,19 @@ class DOM {
 
 
 class Session{
+  static addBt(){
+    return DOM.addHtml('.opts', `<button permanent="" onclick="Session.login()"><b>👤</b></button>`, true);
+  }
+
+
+  static login(){
+    DOM.popup('Login',`<form><input type="text" placeholder="username"><br/><input type="password" placeholder="password"></form>
+      <br/>
+      <center style="text-align:right;"><a href="">Forgot your password?</a><br> <a href="">New account</a></center>`, [
+      ['Login', ()=>null],
+    ])
+  }
+
   static activate(activationId, level, durationMS){
     const L = Session.getActivations();
     if(!L[activationId]){
@@ -90,3 +107,4 @@ class Session{
   }
 }
 window.addEventListener('load', ()=>Session.updateApp());
+window.addEventListener('load', Session.addBt);
