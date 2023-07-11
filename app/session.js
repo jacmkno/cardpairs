@@ -12,7 +12,7 @@
 class DOM {
   static addHtml(parentSelector, html, whiteSpacePrefix = false){
     const n = (d=>(d.innerHTML = html) && d.children[0] )(document.createElement('div'));
-    const p = document.querySelector(parentSelector);
+    const p = typeof(parentSelector) == 'string' ? document.querySelector(parentSelector) : parentSelector;
     if(whiteSpacePrefix){
       p.appendChild(document.createTextNode('\n'));
     }
@@ -74,7 +74,23 @@ class Session{
         <a href="" already>Already have an account?</a><br>
       </center>
     `, [
-      ['Register', () => null],
+      ['Register', () => {
+        const f = p.querySelector('form');
+        f.querySelectorAll('.error').forEach(e=>f.removeChild(e));
+        if(!f.checkValidity()) return;
+        const body = new FormData(f);
+        fetch(`https://example.com/submit`, { method: 'POST', body })
+          .then(r => r.json()).then(({id}) => {
+            DOM.popup('Session Created',`
+              Account created.
+            `, [
+              ['Login', () => Session.login()],
+            ]);
+          })
+          .catch(e => {
+            DOM.addHtml(f, `<div class="error">${e.message}</div>`);
+          });
+      }],
     ]);
     p.querySelector('a[already]').addEventListener('click', Session.login);
     return p;
