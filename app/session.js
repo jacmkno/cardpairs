@@ -36,6 +36,8 @@ class DOM {
       }
     })();
   
+    close();
+
     const rt = DOM.addHtml('BODY', `<div class="popup">
         <label>${title}</label>
         <p>${message}</p>
@@ -59,12 +61,42 @@ class Session{
   }
 
 
-  static login(){
-    DOM.popup('Login',`<form><input type="text" placeholder="username"><br/><input type="password" placeholder="password"></form>
+  static register(e){
+    if(e) e.preventDefault();
+    const p = DOM.popup('Login',`
+      <form>
+        <input type="text" placeholder="username"><br/>
+        <input type="email" placeholder="email"><br/>
+        <input type="password" placeholder="password">
+      </form>
       <br/>
-      <center style="text-align:right;"><a href="">Forgot your password?</a><br> <a href="">New account</a></center>`, [
-      ['Login', ()=>null],
-    ])
+      <center style="text-align:right;">
+        <a href="" already>Already have an account?</a><br>
+      </center>
+    `, [
+      ['Register', () => null],
+    ]);
+    p.querySelector('a[already]').addEventListener('click', Session.login);
+    return p;
+  }
+
+  static login(e = null){
+    if(e) e.preventDefault();
+    const p = DOM.popup('Login',`
+      <form>
+        <input type="text" placeholder="username"><br/>
+        <input type="password" placeholder="password">
+      </form>
+      <br/>
+      <center style="text-align:right;">
+        <a href="" forgot>Forgot your password?</a><br>
+        <a href="" register>New account</a>
+      </center>
+    `, [
+      ['Login', () => null],
+    ]);
+    p.querySelector('a[register]').addEventListener('click', Session.register);
+    return p;
   }
 
   static activate(activationId, level, durationMS){
