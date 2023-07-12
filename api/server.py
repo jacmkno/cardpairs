@@ -1,5 +1,7 @@
 import http.server
 import socketserver
+import cgi
+from register_user import UserRegister
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -7,6 +9,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.api()
         else:
             super().do_GET()
+
+    def do_POST(self):
+        if self.path == "/api/session/register":
+            UserRegister.register_user(self)
+        else:
+            super().do_POST()
 
     def api(self):
         self.send_response(200)
