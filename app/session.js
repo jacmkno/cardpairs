@@ -79,7 +79,7 @@ class Session{
         f.querySelectorAll('.error').forEach(e=>f.removeChild(e));
         if(!f.checkValidity()) return;
         const body = new FormData(f);
-        fetch(`https://example.com/submit`, { method: 'POST', body })
+        fetch(`/api/session/register`, { method: 'POST', body })
           .then(r => r.json()).then(({id}) => {
             DOM.popup('Session Created',`
               Account created.
