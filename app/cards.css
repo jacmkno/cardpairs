@@ -240,3 +240,8 @@ body.showAll .cards > div[card] .wrap3dcard
 .fullscreen button[onclick="toggleFullScreen()"], body.settings button[settings], body.showAll button[onclick="showAll()"] {
   background: #69999e;
 }
+
+body.cards-icons .cards div[card] .desc {
+  display:none !important;
+  box-shadow: inset 0 0 20px 0 red;
+}

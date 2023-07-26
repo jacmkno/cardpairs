@@ -47,6 +47,12 @@ TEMPLATES = {
   'num': (v) => v
 }
 
+STORAGES = {
+  local: localStorage,
+  tmp: {}
+};
+STORAGES.current = STORAGES.local;
+
 function supportsEmoji(e) {
   const em = 16;
   var ctx = (()=>{
@@ -92,7 +98,7 @@ async function loadUTF8Cards(url){
     return fq;
   }
 
-  const supportedEmoji = localStorage.supportedEmoji ? JSON.parse(localStorage.supportedEmoji) : {};
+  const supportedEmoji = STORAGES.current.supportedEmoji ? JSON.parse(STORAGES.current.supportedEmoji) : {};
   const rt = fq.filter(card => {
     for(let i = 0; i < card.length; i += 2){
       const c = card[i];
@@ -106,7 +112,7 @@ async function loadUTF8Cards(url){
     }
     return true;
   });
-  localStorage.supportedEmoji = JSON.stringify(supportedEmoji);
+  STORAGES.current.supportedEmoji = JSON.stringify(supportedEmoji);
   document.body.classList.remove('loading');
   return rt;
 }
@@ -190,14 +196,20 @@ function updateGame(newSettings, preserveStatus=false){
     document.querySelector('.game').classList.remove('completed');
   }
   Object.assign(_game, newSettings);
-  localStorage.cardGameSettings = JSON.stringify({..._game, wrapper: null});
-  if(!preserveStatus) localStorage.removeItem('cardGameStatus');
+  STORAGES.current.cardGameSettings = JSON.stringify({..._game, wrapper: null});
+  if(!preserveStatus) STORAGES.current.removeItem('cardGameStatus');
   return cardGame(
     _game.wrapper,
     Math.max(_game.cols, 1),
     Math.max(_game.rows, 1),
     {type: _game.type, url: _game.url}
   );
+}
+
+function linkToSettings(){
+  var url = new URL(window.location.href);
+  url.searchParams.set("cardGameSettings", encodeURIComponent(STORAGES.current.cardGameSettings));
+  return url.href;  
 }
 
 function initializeCardGame(wrapper){
@@ -207,6 +219,12 @@ function initializeCardGame(wrapper){
     !navigator.userAgent.match(/Opera|OPT\//);
   
   AUDIO_NICE = playPromise('Nice!');
+
+  const fixedGame = Object.fromEntries(new URLSearchParams(location.search).entries());
+  if(fixedGame.cardGameSettings){
+    STORAGES.current = STORAGES.tmp;
+    STORAGES.current.cardGameSettings = fixedGame.cardGameSettings;
+  }
 
   try{
     document.body.setAttribute('os', navigator.platform.toLowerCase().startsWith('win')?'windows':'not-windows');
@@ -228,7 +246,7 @@ function initializeCardGame(wrapper){
   });
   
   try{
-    _game = JSON.parse(localStorage.cardGameSettings);
+    _game = JSON.parse(STORAGES.current.cardGameSettings);
     _game.wrapper = wrapper;
   }catch(e){
     _game = null;
@@ -260,7 +278,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
 
   const prevData = (()=>{
     try{
-      return localStorage.cardGameStatus?JSON.parse(localStorage.cardGameStatus):null;
+      return STORAGES.current.cardGameStatus?JSON.parse(STORAGES.current.cardGameStatus):null;
     }catch(e){
       return null;
     }
@@ -341,7 +359,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
 
   const save = () => {
     const cNds = _q(`.cards div[card]`);
-    localStorage.cardGameStatus = JSON.stringify({
+    STORAGES.current.cardGameStatus = JSON.stringify({
       cards, state: state.map((v, i) => ({
         visible: cNds[i].classList.contains('visible'),
         paired: cNds[i].classList.contains('paired')
@@ -429,6 +447,12 @@ async function cardGame(wrapper, cols, rows, {type, url}){
         const [w, h] = [img.offsetWidth + M, img.offsetHeight + M];
         img.style.setProperty('--cardzoom', 1/Math.max(...[w/W, h/H]))
       }), 50);
+      const cArr = _q('.cards div[card]');
+      if(cArr.length && cArr[0].offsetWidth < 93 || cArr[0].offsetHeight < 70){
+        document.body.classList.add('cards-icons');
+      }else{
+        document.body.classList.remove('cards-icons');
+      }
   };
 
   window.addEventListener('resize', function(){

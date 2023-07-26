@@ -36,6 +36,8 @@
             BODY[style *= "pwa-install-progress-suffix"] .opts button[onclick="installPWA()"]{
               pointer-events: none;
             }
+            body.banner > .opts { display:none; }
+            body.banner { margin:5px;}
         </style>
         <script>
           function showAll(){
@@ -58,7 +60,7 @@
           }
         </script>
     </head>
-    <body>
+    <body onload="if(location.hash.length) document.body.classList.add(location.hash.substr(1))">
         <div class="game">
           <script>load(initializeCardGame)</script>
         </div>
