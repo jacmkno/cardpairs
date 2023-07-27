@@ -212,6 +212,29 @@ function linkToSettings(){
   return url.href;  
 }
 
+function squareDistribution(maxSquareSize = 80, breakpoint = 40, width = window.innerWidth, height = window.innerHeight) {
+  let cols, rows;
+  if(height*0.9 > breakpoint && width*0.9 > breakpoint){
+    breakpoint += Math.floor((Math.min(width, height) - breakpoint)*0.1)
+  }
+
+  if (width < breakpoint) {
+      cols = 1;
+  } else {
+      let squareSize = Math.min(maxSquareSize, Math.max(breakpoint, Math.floor(width / maxSquareSize)));
+      cols = Math.floor(width / squareSize);
+  }
+
+  if (height < breakpoint) {
+      rows = 1;
+  } else {
+      let squareSize = Math.min(maxSquareSize, Math.max(breakpoint, Math.floor(height / maxSquareSize)));
+      rows = Math.floor(height / squareSize);
+  }
+  return {cols, rows};
+}
+
+
 function initializeCardGame(wrapper){
   isSafari = navigator.vendor.match(/apple/i) &&
     !navigator.userAgent.match(/crios/i) &&
@@ -221,9 +244,21 @@ function initializeCardGame(wrapper){
   AUDIO_NICE = playPromise('Nice!');
 
   const fixedGame = Object.fromEntries(new URLSearchParams(location.search).entries());
-  if(fixedGame.cardGameSettings){
+  console.log('initializeCardGame...'+ (fixedGame.auto !== undefined?'auto':'no-auto'), fixedGame);
+
+  if(fixedGame.auto !== undefined){
+    STORAGES.current = STORAGES.tmp;
+    STORAGES.current.cardGameSettings = JSON.stringify({
+      ...squareDistribution(),
+      type: 'utf8',
+      url: (r=>r[Math.floor(Math.random()*r.length)])([...document.querySelectorAll('.opts select option')].map(e=>e.value))
+    });
+    setTimeout(showAll, 500);
+  }else if(fixedGame.cardGameSettings){
     STORAGES.current = STORAGES.tmp;
     STORAGES.current.cardGameSettings = fixedGame.cardGameSettings;
+  }else{
+    STORAGES.current = STORAGES.local;
   }
 
   try{
@@ -255,8 +290,7 @@ function initializeCardGame(wrapper){
   if(!_game){
     _game = {
       wrapper,
-      cols: 4,
-      rows: 4,
+      ...squareDistribution(300, 150),
       type: 'utf8',
       url: 'cards-utf8-flags.json'
     }

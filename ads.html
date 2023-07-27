@@ -1,15 +1,48 @@
 <style>
     .resizable {
-        resize:both; width:100px; height:100px; background: red; overflow:auto;
+        resize: both;
+        width: 100px;
+        height: 100px;
+        background: red;
         overflow: auto;
         background: #eaeaea;
         border: Solid 1px black;
         padding: 0 9px 9px 0;
     }
     iframe {
-        width: 100%; height:100%;
+        width: 100%;
+        height: 100%;
     }
 </style>
+
 <div class="resizable">
-    <iframe src="index.html#banner" frameborder="0" scrolling="no"></iframe>
+    <iframe id="myIframe" src="index.html?auto#banner" frameborder="0" scrolling="no"></iframe>
 </div>
+
+<script>
+    // Debounce function
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const later = () => {
+                timeout = null;
+                func.apply(this, arguments);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Get the elements
+    const resizable = document.querySelector('.resizable');
+    const iframe = document.querySelector('#myIframe');
+
+    // Create a resize observer
+    const observer = new ResizeObserver(debounce(() => {
+        // Reload the iframe when the resizable div changes size
+        iframe.contentWindow.location.reload();
+    }, 250)); // 250ms debounce time
+
+    // Start observing the resizable div
+    observer.observe(resizable);
+</script>
