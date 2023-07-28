@@ -58,9 +58,30 @@
               document.body.requestFullscreen();
             }
           }
+          function mainOnLoad(){
+            if(location.hash.length){
+              document.body.classList.add(location.hash.substr(1));
+              document.body.appendChild((c => {
+                c.classList.add('banner-wrap');
+                c.setAttribute('href', '/')
+                c.setAttribute('target', '_blank')
+                c.innerHTML = `
+                  <h1>Card pairig game</h1>
+                  <h2>Forgot Your Keys?</h2>
+                  <div>
+                    <span>Improve your memory</span>
+                    <span>Practice you english</span>
+                    <span>Practice you math</span>
+                    <span>Perfect for kids</span>
+                  </div>
+                `;
+                return c;
+              })(document.createElement('A')));
+            }
+          }
         </script>
     </head>
-    <body onload="if(location.hash.length) document.body.classList.add(location.hash.substr(1))">
+    <body onload="mainOnLoad()">
         <div class="game">
           <script>load(initializeCardGame)</script>
         </div>
