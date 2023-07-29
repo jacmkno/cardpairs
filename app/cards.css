@@ -250,41 +250,36 @@ body.cards-icons .cards div[card] .desc {
 /*Banner*/
 
 .banner-wrap {
-  --ad-bsize: min(10vw, 10vh, 15px);
-  --ad-scolor: black;
-  --ad-ssize: calc(0.5 * var(--ad-bsize));
-  display: block;
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  left: 0;
-  top: 0;
-  z-index: 99999;
-  font-size: var(--ad-bsize);
-  color: white;
-  text-decoration: none;
-  text-shadow: 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor);
+	--ad-bsize: clamp(7px, 15px, min(5vw, 5vh));
+	--ad-scolor: black;
+	--ad-ssize: calc(0.5 * var(--ad-bsize));
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	z-index: 99999;
+	font-size: var(--ad-bsize);
+	color: white;
+	text-decoration: none;
+	text-shadow: 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor), 0 0 var(--ad-ssize) var(--ad-scolor);
+	display: flex;
+	flex-direction: column;
+	align-content: center;
 }
 
 
 .banner-wrap > * {
-  position: absolute;
-  top: var(--ad-bsize);
-  left: 0;
-  padding: var(--ad-bsize);
-  padding-bottom: 0;
-  margin: 0;
-  box-sizing: border-box;
+	padding: var(--ad-bsize);
+	margin: 0;
+	box-sizing: border-box;
 }
 
 .banner-wrap > h2 {
 	font-size: 300%;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
-  width:100%;
-  text-align: center;
-  margin-top: calc(0.8 * var(--ad-bsize));
+	width: 100%;
+	text-align: center;
+	margin: auto;
 }
 
 .banner-wrap > div > span {
