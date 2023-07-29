@@ -268,13 +268,23 @@ body.cards-icons .cards div[card] .desc {
 	align-content: center;
 }
 
+@media (max-height: 200px) and (min-width: 500px) {
+  .banner-wrap {
+    --ad-bsize: clamp(10px, 10px, 5vw);
+  }
+}
+
 
 .banner-wrap > * {
-	padding: var(--ad-bsize);
+  padding-left: var(--ad-bsize);
+  padding-right: var(--ad-bsize);
 	margin: 0;
 	box-sizing: border-box;
 }
 
+.banner-wrap > h1 {
+  padding-top: var(--ad-bsize);
+}
 .banner-wrap > h2 {
 	font-size: 300%;
 	width: 100%;
