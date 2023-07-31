@@ -159,6 +159,7 @@ function load(f, ...args){
 }
 
 function playPromise(text){
+  if(document.body.classList.contains('banner')) return;
   const url = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'audios/' + (AUDIOS[text]?AUDIOS[text]:audioFileName(text));
   const audio = new Audio(url);
   if(isSafari){

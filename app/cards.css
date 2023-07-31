@@ -290,18 +290,40 @@ body.cards-icons .cards div[card] .desc {
 	width: 100%;
 	text-align: center;
 	margin: auto;
+  position: relative;
 }
 
-.banner-wrap > div > span {
+.banner-wrap > h2 > span {
   opacity: 0;
   position: absolute;
-  animation: prompt var(--animation-duration) calc(var(--animation-duration) + var(--delay)) forwards;
-  animation-delay: calc(var(--animation-duration) * var(--i, 0));
-  display: none;
+  left: 0; right:0; 
+  display: block;
+  transform: translateY(-50%);
 }
 
-@keyframes prompt {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+
+/* Keyframe Animation */
+@keyframes fadeInFromSide {
+  0% {
+    opacity: 0;
+    transform: translateX(-100vw) translateY(-50%);
+  }
+  25% {
+    transform: translateX(0vw) translateY(-50%);
+    opacity: 1;
+  }
+  75% {
+    transform: translateX(0vw) translateY(-50%);
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100vw) translateY(-50%);
+  }
+}
+
+/* Apply Animation to Spans with iterator */
+.banner-wrap.anim > h2 span {
+  animation: fadeInFromSide 5s ease-in-out;
+  animation-delay: calc(5s * var(--cnt));
 }

@@ -62,19 +62,26 @@
             if(location.hash.length){
               document.body.classList.add(location.hash.substr(1));
               document.body.appendChild((c => {
-                c.classList.add('banner-wrap');
+                c.className = 'banner-wrap anim';
                 c.setAttribute('href', '/')
                 c.setAttribute('target', '_blank')
                 c.innerHTML = `
                   <h1>Card pairig game</h1>
-                  <h2>Forgot Your Keys?</h2>
-                  <div>
+                  <h2>
+                    <span>Forgot you keys?</span>
                     <span>Improve your memory</span>
                     <span>Practice you english</span>
                     <span>Practice you math</span>
                     <span>Perfect for kids</span>
-                  </div>
+                    <span>Play Now!</span>
+                  </h2>
                 `;
+                const spans = c.querySelectorAll('span');
+                spans.forEach((e,i)=>e.style.setProperty('--cnt', i))
+                setInterval(()=>{
+                  c.classList.remove('anim');
+                  setTimeout(()=>c.classList.add('anim'), 50);
+                }, spans.length*5000);
                 return c;
               })(document.createElement('A')));
             }
