@@ -41,26 +41,43 @@
   position:relative;
 }
 .game .congrats {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  font-size: 4em;
-  z-index: 2;
-  text-align: center;
-  background: #ffffffdb;
-  border-radius: 0.5em;
-  padding: 0.5em;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	font-size: 2em;
+	z-index: 2;
+	text-align: center;
+	background: white;
+	border-radius: 0.5em;
+	padding: 0.5em;
+	border: Solid 3px #9cc2e8;
+	padding-bottom: 0.2em;
+	box-shadow: 0 0 10px 3px #007bff;
 }
 
 .game .congrats button {
-    font-size: 52%;
-    margin: 0.3em;
+	font-size: 51%;
+	margin: 0.3em;
+	background: #007bff;
+	border: 0;
+	color: white;
+	padding: 0.4em 1.2em;
+	border-radius: 0.3em;
+	cursor: pointer;
 }
 
 .game:not(.completed) .congrats {
   display:none;
 }
+
+.game .congrats > div {
+  margin: 0.5em;
+}
+.game .congrats button:hover {
+  background: #025fc4;
+}
+
 html {
   display: flex;
   flex-direction:column;
@@ -105,19 +122,19 @@ body:not(.settings) .opts button[settings] > b:before {
 }
 
 .opts button {
-  display: inline-block;
-  padding: 0;
-  color: #f9f9f9;
-  background-color: #037f8c;
-  font-family: sans-serif;
-  line-height: 2;
-  font-size: 1rem;
-  height: 2em;
-  width: 2em;
-  border: 0;
-  vertical-align: middle;
-  border-radius: 10%;
-  box-shadow: 0 0 0px 2px #63c8d2; 
+	display: inline-block;
+	padding: 0;
+	color: #f9f9f9;
+	background-color: #007bff;
+	font-family: sans-serif;
+	line-height: 2;
+	font-size: 1rem;
+	height: 2em;
+	width: 2em;
+	border: 0;
+	vertical-align: middle;
+	border-radius: 10%;
+	box-shadow: 0 0 0px 2px #9cc2e8;
 }
 
 .cards div[card]::after {
@@ -238,5 +255,11 @@ body.showAll .cards > div[card] .wrap3dcard
 }
 
 .fullscreen button[onclick="toggleFullScreen()"], body.settings button[settings], body.showAll button[onclick="showAll()"] {
-  background: #69999e;
+  background: #9cc2e8;
+  box-shadow: 0 0 0px 2px white;
 }
+
+.opts button:hover {
+  background: #025fc4;
+}
+
