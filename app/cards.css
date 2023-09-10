@@ -263,7 +263,7 @@ body.showAll .cards > div[card] .wrap3dcard
   background: #025fc4;
 }
 
-body.max-reached button[onclick*="updateGame"][onclick*="+"] {
+body.max-reached button[onclick*="updateGame"][onclick*="+"], body.min-reached button[onclick*="updateGame"][onclick*="-"] {
   opacity: 0.5;
   pointer-events: none;
 }

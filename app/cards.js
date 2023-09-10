@@ -299,6 +299,18 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     shuffle(GENERATORS[url] ? GENERATORS[url](desiredCards) : await loadUTF8Cards(url) )
   );
 
+  if(cards.length < desiredCards - 2){
+    document.body.classList.add('max-reached');
+  } else {
+    document.body.classList.remove('max-reached');
+  }
+
+  if(desiredCards <= 4){
+    document.body.classList.add('min-reached');
+  }else{
+    document.body.classList.remove('min-reached');
+  }
+
   const audioPromises = {};
   const audios = cards.map(c => audioPromises[c[2]] = 
       audioPromises[c[2]] ? audioPromises[c[2]] : playPromise(c[2])
