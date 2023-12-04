@@ -34,7 +34,20 @@ GENERATORS = {
       let n = Math.floor(Math.random() * i * 1.5);
       return [{T:'sum', v:[n, i - n]}, '', {T:'num', v:i}];
     });
+  },
+  nums: function(desiredCards){
+    return new Array(desiredCards).fill(0).map((e, i) => {
+      return [{T:'num', v:i}];
+    });
+  },
+  mult10: function(desiredCards){
+    return Object.values(new Array(10).fill(0).map((_,i)=>new Array(10).fill(0).map((_, j)=>[i,j,i*j]) )
+      .flat()
+      .reduce((a,[x,y,r])=>Object.assign(a, {[r]: (a[r]??[]).concat([[x,y,r]])}),{}))
+      .map(a=>(i=>a[i])(Math.floor(Math.random()*a.length))
+).map(([a,b,v])=>[{T:'mul', v: [a,b]},'', {T:'num', v}]);
   }
+  // new Array(10).fill(0).map((_,i)=>new Array(10).fill(0).map((_, j)=>[i,j,i*j]) ).flat()
 };
 GENERATORS.upperlower.genAudios = true;
 
@@ -44,6 +57,7 @@ TEMPLATES = {
     const rt = numbers.map(n => (n >= 0)?`+${n}`:n).join('');
     return rt.startsWith('+') ? rt.substr(1) : rt;
   },
+  'mul': ([a,b])=> `${a}×${b}`,
   'num': (v) => v
 }
 
