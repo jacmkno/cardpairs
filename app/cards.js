@@ -66,6 +66,7 @@ function supportsEmoji(e) {
   var ctx = (()=>{
     if(!this.UTF_SUPPORT_CTX){
       var c = document.createElement("canvas")
+      c.setAttribute('willReadFrequently', true);
       this.UTF_SUPPORT_CTX = c.getContext("2d");
       c.width = em;
       c.height = em;
@@ -134,7 +135,8 @@ function renderCardTemplate(cardValue){
 }
 
 function audioFileName(text){
-  return `${text.replace(/[^a-zA-Z0-9]/g, '-')}.mp3`;
+  const fname = text.replace(/[^a-zA-Z0-9]/g, '-');
+  return fname.length?`${fname}.mp3`:null;
 }
 
 function shuffle(a){
@@ -167,7 +169,9 @@ function load(f, ...args){
 }
 
 function playPromise(text){
-  const url = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'audios/' + (AUDIOS[text]?AUDIOS[text]:audioFileName(text));
+  const afname = AUDIOS[text]?AUDIOS[text]:audioFileName(text);
+  if(!afname) return async ()=>true;
+  const url = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'audios/' + afname;
   const audio = new Audio(url);
   if(isSafari){
     return () => new Promise(r => {
@@ -230,12 +234,7 @@ function initializeCardGame(wrapper){
     document.querySelector('.opts button[onclick*="toggleFullScreen"]').style.display = 'none';
   }
 
-  document.querySelectorAll('select[playOnChange]').forEach(s => {
-    const audios = [...s.querySelectorAll('option')].map(o => playPromise(o.innerText));
-    s.addEventListener('change', e => {
-      audios[s.selectedIndex]();
-    });
-  });
+  playOnChange();
 
   window.addEventListener('resize', e=>{
     if(_resize) _resize();
@@ -262,7 +261,6 @@ function initializeCardGame(wrapper){
     document.querySelectorAll('.pressed').forEach(c => c.classList.remove('pressed'));
   });  
 
-  document.querySelector('.opts select').value = _game.url;
   return updateGame({}, true);
 }
 
@@ -466,6 +464,86 @@ async function cardGame(wrapper, cols, rows, {type, url}){
 
   checkCompleted();
   setTimeout(_resize, 0);
+}
+
+
+function popup(html, beforeDOM=(e=>null)){
+    const div = document.createElement('div');
+    div.className = 'popup';
+    div.innerHTML = `<div class="congrats">
+            ${html}
+            <nav>
+              <button close>Close</button>
+            </nav>
+    </div>`;
+
+    const close = () => document.body.removeChild(div);
+
+    beforeDOM(div, close);
+  
+    div.querySelector('button[close]')
+      .addEventListener('click', close);
+
+    div.addEventListener('click', close);
+  
+    div.querySelector(':scope > div')
+      .addEventListener('click', 
+        e => e.stopPropagation()
+      );
+  
+    document.body.appendChild(div);
+    return div; 
+}
+
+function mainMenu(){
+  popup(`<div class="opts settings">
+            <button onclick="updateGame({cols: _game.cols-1})"><b>↞</b></button>
+            <button onclick="updateGame({rows: _game.rows-1})"><b>↟</b></button>
+            <button onclick="updateGame({cols: _game.cols+1})"><b>↠</b></button>
+            <button onclick="updateGame({rows: _game.rows+1})"><b>↡</b></button>
+            <button permanent onclick="showAll()"><b>👁</b></button>            
+            
+            <select playOnChange onchange="updateGame({url: this.value});">
+              <option value="cards-utf8-animals.json">Animals</option>
+              <option value="cards-utf8-activities.json">Activities</option>
+              <option value="cards-utf8-food.json">Food</option>
+              <option value="cards-utf8-objects.json">Objects</option>
+              <option value="cards-utf8-people.json">People</option>
+              <option value="cards-utf8-smileys.json">Smileys</option>
+              <option value="cards-utf8-symbols.json">Symbols</option>
+              <option value="cards-utf8-travel.json">Travel</option>
+              <!-- <option value="cards-utf8-stuff.json">All kinds of things</option>-->
+              <option value="cards-utf8-transport.json">Transport</option>
+              <option value="cards-utf8-flags.json">Flags</option>
+              <option value="upperlower">Upper/Lower Case</option>
+              <option value="sum">Sums &amp; Subtractions</option>
+              <option value="nums">Numbers</option>
+              <option value="mult10">Mutpliplication up to 10</option>              
+            </select>
+      </div>
+  `, (div, close) => {
+      div.querySelector('nav').innerHTML += `
+        <button start>New Game</button>
+      `;
+      div.querySelector('button[start]').addEventListener('click', e=>{
+        updateGame({});
+        close();
+      });
+      div.querySelector('.opts select').value = _game.url;
+  });
+  playOnChange();
+}
+
+function playOnChange(){
+  document.querySelectorAll('select[playOnChange]:not([ready])').forEach(s => {
+    s.setAttribute('ready',1);
+    const audios = playOnChange.audios || 
+      [...s.querySelectorAll('option')].map(o => playPromise(o.innerText));
+    playOnChange.audios = audios;
+    s.addEventListener('change', e => {
+      audios[s.selectedIndex]();
+    });
+  });  
 }
 
 if(typeof(module) != 'undefined') module.exports = {AUDIOS, audioFileName, GENERATORS};
