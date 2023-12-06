@@ -40,7 +40,7 @@
   flex:1;
   position:relative;
 }
-.game .congrats {
+.congrats {
 	position: absolute;
 	left: 50%;
 	top: 50%;
@@ -56,7 +56,7 @@
 	box-shadow: 0 0 10px 3px #007bff;
 }
 
-.game .congrats button {
+.congrats button {
 	font-size: 51%;
 	margin: 0.3em;
 	background: #007bff;
@@ -71,10 +71,10 @@
   display:none;
 }
 
-.game .congrats > div {
+.congrats > div {
   margin: 0.5em;
 }
-.game .congrats button:hover {
+.congrats button:hover {
   background: #025fc4;
 }
 
@@ -105,15 +105,6 @@ body:not(.settings) .opts > *:not([settings]):not([permanent]) {
 .opts > * {
   cursor: pointer;
 }
-
-.opts button[settings] > b:before {
-  content: '🔒';
-}
-
-body:not(.settings) .opts button[settings] > b:before {
-  content: '✎';
-}
-
 
 .opts select, .opts button {
   font-size: 140%;
@@ -266,4 +257,15 @@ body.showAll .cards > div[card] .wrap3dcard
 body.max-reached button[onclick*="updateGame"][onclick*="+"], body.min-reached button[onclick*="updateGame"][onclick*="-"] {
   opacity: 0.5;
   pointer-events: none;
+}
+
+
+.popup {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    background: #000000a8;
+	z-index:2
 }
