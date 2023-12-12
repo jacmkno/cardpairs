@@ -26,3 +26,57 @@
   border-radius: 10%;
   box-shadow: 0 0 0px 2px #63c8d2; 
 }
+
+
+
+.popup {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    top: 0;
+    background: #000000a8;
+}
+
+.popup .congrats, .popup .opts {
+    text-align: left;
+}
+
+.popup .opts > div {
+    display: flex;
+    align-items: center;
+}
+
+.popup nav {
+    text-align: center;
+}
+
+.popup .opts label {
+    width: 5em;
+    color: #007bff;
+}
+
+.popup .opts span {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+}
+
+.popup .opts select, .popup .opts button {
+    margin: 0;
+}
+
+.popup .opts select {border-radius: 4px;background: #007bff;color: white;box-shadow: 0 0 0px 2px #9cc2e8;}
+
+.popup .opts > div:not(:last-child) {
+    border-bottom: Solid 1px #007bff;
+    padding-bottom: 0.3em;
+    margin-bottom: 0.3em;
+}
+
+.popup h2 {
+    margin: 0;
+    color: #007bff;
+    text-align: center;
+    text-shadow: 0 0 5px #007bff;
+}
