@@ -259,7 +259,9 @@ function initializeCardGame(wrapper){
 
   document.body.addEventListener('touchend', e=>{
     document.querySelectorAll('.pressed').forEach(c => c.classList.remove('pressed'));
-  });  
+  });
+
+  mainMenu();
 
   return updateGame({}, true);
 }
