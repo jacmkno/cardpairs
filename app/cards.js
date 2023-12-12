@@ -498,30 +498,37 @@ function popup(html, beforeDOM=(e=>null)){
 }
 
 function mainMenu(){
-  popup(`<div class="opts settings">
-            <button onclick="updateGame({cols: _game.cols-1})"><b>↞</b></button>
-            <button onclick="updateGame({rows: _game.rows-1})"><b>↟</b></button>
-            <button onclick="updateGame({cols: _game.cols+1})"><b>↠</b></button>
-            <button onclick="updateGame({rows: _game.rows+1})"><b>↡</b></button>
-            <button permanent onclick="showAll()"><b>👁</b></button>            
-            
-            <select playOnChange onchange="updateGame({url: this.value});">
-              <option value="cards-utf8-animals.json">Animals</option>
-              <option value="cards-utf8-activities.json">Activities</option>
-              <option value="cards-utf8-food.json">Food</option>
-              <option value="cards-utf8-objects.json">Objects</option>
-              <option value="cards-utf8-people.json">People</option>
-              <option value="cards-utf8-smileys.json">Smileys</option>
-              <option value="cards-utf8-symbols.json">Symbols</option>
-              <option value="cards-utf8-travel.json">Travel</option>
-              <!-- <option value="cards-utf8-stuff.json">All kinds of things</option>-->
-              <option value="cards-utf8-transport.json">Transport</option>
-              <option value="cards-utf8-flags.json">Flags</option>
-              <option value="upperlower">Upper/Lower Case</option>
-              <option value="sum">Sums &amp; Subtractions</option>
-              <option value="nums">Numbers</option>
-              <option value="mult10">Mutpliplication up to 10</option>              
-            </select>
+  popup(`<h2>Finding Pairs</h2> <div class="opts settings">
+            <div>
+              <label>Size</label>
+              <span>
+                <button onclick="updateGame({cols: _game.cols-1})"><b>↞</b></button>
+                <button onclick="updateGame({rows: _game.rows-1})"><b>↟</b></button>
+                <button onclick="updateGame({cols: _game.cols+1})"><b>↠</b></button>
+                <button onclick="updateGame({rows: _game.rows+1})"><b>↡</b></button>
+                <button permanent onclick="showAll()"><b>👁</b></button>
+              </span>
+            </div>
+            <div>
+              <label>Card Set</label>
+              <select playOnChange onchange="updateGame({url: this.value});">
+                <option value="cards-utf8-animals.json">Animals</option>
+                <option value="cards-utf8-activities.json">Activities</option>
+                <option value="cards-utf8-food.json">Food</option>
+                <option value="cards-utf8-objects.json">Objects</option>
+                <option value="cards-utf8-people.json">People</option>
+                <option value="cards-utf8-smileys.json">Smileys</option>
+                <option value="cards-utf8-symbols.json">Symbols</option>
+                <option value="cards-utf8-travel.json">Travel</option>
+                <!-- <option value="cards-utf8-stuff.json">All kinds of things</option>-->
+                <option value="cards-utf8-transport.json">Transport</option>
+                <option value="cards-utf8-flags.json">Flags</option>
+                <option value="upperlower">Upper/Lower Case</option>
+                <option value="sum">Sums &amp; Subtractions</option>
+                <option value="nums">Numbers</option>
+                <option value="mult10">Mutpliplication up to 10</option>              
+              </select>
+            </div>
       </div>
   `, (div, close) => {
       div.querySelector('nav').innerHTML += `
