@@ -345,7 +345,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     ].filter(c => c).join(' ') }"`;
       
   }
-  ScoreManager.scoreAtPlay = state.length;
+  ScoreManager.setReward(state.length);
   wrapper.innerHTML = `<div class="cards">${
       state.map((e, i)=>
           `<div card="${cards[i]?cards[i][0]:''}" index="${i}" ${cards[i]?'':'missing'} ${classes(i)}>
