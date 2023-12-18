@@ -5,7 +5,7 @@ let _game = null;
 
 let AUDIO_NICE = () => null;
 let AUDIO_WRONG = () => null; //playPromise('Sorry...')
-let
+const ScoreManager = new ScoreKeeper();
 
 AUDIOS = {
   'Nice!': "sys-nice.mp3",
@@ -205,8 +205,10 @@ function playPromise(text){
 }
 
 function updateGame(newSettings, preserveStatus=false){
-  const scoreGame = ((s,a)=>s.options[s.selectedIndex].getAttribute(a))(selectBox, 'attribute');
-  
+  const gameSelector = document.querySelector('select[playOnChange]');
+  const scoreGame = ((s,a)=>s.options[s.selectedIndex].getAttribute(a))(gameSelector, 'game');
+  ScoreManager.setGame(scoreGame);
+
   if(!preserveStatus){
     document.querySelector('.game').classList.remove('completed');
   }
@@ -341,6 +343,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
     ].filter(c => c).join(' ') }"`;
       
   }
+  ScoreManager.scoreAtPlay = state.length;
   wrapper.innerHTML = `<div class="cards">${
       state.map((e, i)=>
           `<div card="${cards[i]?cards[i][0]:''}" index="${i}" ${cards[i]?'':'missing'} ${classes(i)}>
