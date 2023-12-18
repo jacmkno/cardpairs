@@ -212,6 +212,7 @@ function updateGame(newSettings, preserveStatus=false){
   }
 
   if(!preserveStatus){
+    ScoreManager.allowNewReward();
     document.querySelector('.game').classList.remove('completed');
   }
   Object.assign(_game, newSettings);
@@ -385,6 +386,7 @@ async function cardGame(wrapper, cols, rows, {type, url}){
   const checkCompleted = () => {
     if(_q(`div[card].paired`).length == cards.length){
       wrapper.classList.toggle('completed');
+      ScoreManager.claimReward();
     }
   }
   save();
