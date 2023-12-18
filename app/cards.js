@@ -206,8 +206,10 @@ function playPromise(text){
 
 function updateGame(newSettings, preserveStatus=false){
   const gameSelector = document.querySelector('select[playOnChange]');
-  const scoreGame = ((s,a)=>s.options[s.selectedIndex].getAttribute(a))(gameSelector, 'game');
-  ScoreManager.setGame(scoreGame);
+  if(gameSelector){
+    const scoreGame = ((s,a)=>s.options[s.selectedIndex].getAttribute(a))(gameSelector, 'game');
+    ScoreManager.setGame(scoreGame);
+  }
 
   if(!preserveStatus){
     document.querySelector('.game').classList.remove('completed');
