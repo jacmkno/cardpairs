@@ -5,6 +5,7 @@ let _game = null;
 
 let AUDIO_NICE = () => null;
 let AUDIO_WRONG = () => null; //playPromise('Sorry...')
+let
 
 AUDIOS = {
   'Nice!': "sys-nice.mp3",
@@ -204,6 +205,8 @@ function playPromise(text){
 }
 
 function updateGame(newSettings, preserveStatus=false){
+  const scoreGame = ((s,a)=>s.options[s.selectedIndex].getAttribute(a))(selectBox, 'attribute');
+  
   if(!preserveStatus){
     document.querySelector('.game').classList.remove('completed');
   }
@@ -512,21 +515,21 @@ function mainMenu(){
             <div>
               <label>Card Set</label>
               <select playOnChange onchange="updateGame({url: this.value});">
-                <option value="cards-utf8-animals.json">Animals</option>
-                <option value="cards-utf8-activities.json">Activities</option>
-                <option value="cards-utf8-food.json">Food</option>
-                <option value="cards-utf8-objects.json">Objects</option>
-                <option value="cards-utf8-people.json">People</option>
-                <option value="cards-utf8-smileys.json">Smileys</option>
-                <option value="cards-utf8-symbols.json">Symbols</option>
-                <option value="cards-utf8-travel.json">Travel</option>
+                <option game="memory" value="cards-utf8-animals.json">Animals</option>
+                <option game="memory" value="cards-utf8-activities.json">Activities</option>
+                <option game="memory" value="cards-utf8-food.json">Food</option>
+                <option game="memory" value="cards-utf8-objects.json">Objects</option>
+                <option game="memory" value="cards-utf8-people.json">People</option>
+                <option game="memory" value="cards-utf8-smileys.json">Smileys</option>
+                <option game="memory" value="cards-utf8-symbols.json">Symbols</option>
+                <option game="memory" value="cards-utf8-travel.json">Travel</option>
                 <!-- <option value="cards-utf8-stuff.json">All kinds of things</option>-->
-                <option value="cards-utf8-transport.json">Transport</option>
-                <option value="cards-utf8-flags.json">Flags</option>
-                <option value="upperlower">Upper/Lower Case</option>
-                <option value="sum">Sums &amp; Subtractions</option>
-                <option value="nums">Numbers</option>
-                <option value="mult10">Mutpliplication up to 10</option>              
+                <option game="memory" value="cards-utf8-transport.json">Transport</option>
+                <option game="memory" value="cards-utf8-flags.json">Flags</option>
+                <option game="reading" value="upperlower">Upper/Lower Case</option>
+                <option game="math" value="sum">Sums &amp; Subtractions</option>
+                <option game="memory" value="nums">Numbers</option>
+                <option game="math" value="mult10">Mutpliplication up to 10</option>              
               </select>
             </div>
       </div>
