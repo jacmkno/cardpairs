@@ -5,7 +5,7 @@ A digital board for challenging your memory and math skills. Expand the concept 
 
   - **A free board to use in group or solitary play:** The game is designed as a free board with no limits on the gameplay, allowing you to be creative. Here are some ideas:
       - Place it on a tablet on your dining table, take turns picking pairs of cards, award points to whoever discovers a pair, and the person who gets the most pairs wins! 
-      - Expose all the cards see how many pairs you can remember after closing them.
+      - Expose all the cards see how many pairs each player can remember after closing them with a new set of cards for each player.
       - Time how long each player takes to discover a 6x4 set, the faster player wins.
   - **Offline and preserved state:** You can play it offline or online, install it as an app, but in any case, the board will always remain as you left it. Like a physical board game, without the hassle of reorganizing it every time.
 
