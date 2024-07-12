@@ -8,7 +8,7 @@ A digital board for challenging your memory and math skills. Expand the concept 
   - **Offline and preserved state:** You can play it offline or online, install it as an app, but in any case, the board will always remain as you left it. Like a physical board game, without the hassle of reorganizing it every time.
 
 # Try it here
-Go to https://jacmkno.github.io/cardpairs/ get your own for free! No forms, no subscriptions, just a digital board ready to use.
+Get your own here: https://jacmkno.github.io/cardpairs for free! No forms, no subscriptions, just a digital board ready to use.
 
 **Purpose**
 
